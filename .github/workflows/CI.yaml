@@ -19,6 +19,7 @@ jobs:
           node-version: '20'
 
   build:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
