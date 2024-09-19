@@ -1,15 +1,13 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
-    push:
-      branches:
-        - main
-    pull_request:
-      branch:
-        - main
-    types:
-      - pass
 
 jobs:
   setup:
