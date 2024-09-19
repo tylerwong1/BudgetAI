@@ -23,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Move to client folder for install
+        run: cd client
       - name: Install modules
         run: npm install
       - name: Build app
