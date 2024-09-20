@@ -24,15 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install modules
-        run: npm install
+        run: cd client && npm install
       - name: Build app
-        run: npm run build
-      - name: Delete Old Site
-        run: rm -rf docs
-      - name: Change "dist" to "docs"
-        run: mv dist docs
+        run: cd client && npm run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: ./client/dist
