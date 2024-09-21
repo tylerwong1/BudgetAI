@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    paths:
+      - './client/src/*.tsx'
+      - './client/src/*.css'
+      - './client/index.html'
+      - './server/*.py'
+
   workflow_dispatch:
 
 jobs:
