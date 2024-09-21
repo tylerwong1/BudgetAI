@@ -16,17 +16,27 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
   build:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install Python dependencies
+        run: pip install -r server/requirements.txt
       - name: Install modules
         run: cd client && npm install
       - name: Build app
         run: cd client && npm run build
+      - name: Start Flask Server
+        run: python server/main.py &
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
