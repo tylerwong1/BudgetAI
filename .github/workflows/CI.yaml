@@ -35,7 +35,7 @@ jobs:
       - name: Build app
         run: cd client && npm run build
       - name: Start Flask Server
-        run: python server/main.py &
+        run: python server/main.py
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
