@@ -1,4 +1,4 @@
-name: Static Frontend Deployment
+name: Frontend Deployment # Static Deployment of Frontend to GitHub Pages
 
 on:
   push:
