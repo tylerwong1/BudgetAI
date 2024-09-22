@@ -1,12 +1,16 @@
-name: CI
+name: Frontend Deployment # Static Deployment of Frontend to GitHub Pages
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'client/**'   # Only run on changes in the client folder
   pull_request:
     branches:
       - main
+    paths:
+      - 'client/**'   # Only run on changes in the client folder
   workflow_dispatch:
 
 jobs:
