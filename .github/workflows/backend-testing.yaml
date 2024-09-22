@@ -5,9 +5,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'server/**'   # Only run on changes in the client folder
   pull_request:
     branches:
       - main
+    paths:
+      - 'server/**'   # Only run on changes in the client folder
+  workflow_dispatch:
 
 jobs:
   test:
