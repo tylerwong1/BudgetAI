@@ -33,9 +33,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r server/requirements.txt
 
     # Step 4: Run the unit tests in test.py
     - name: Run unit tests
       run: |
-        python -m unittest test.py
+        python -m unittest server/test.py
