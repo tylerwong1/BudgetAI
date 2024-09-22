@@ -44,3 +44,7 @@ Thumbs.db
 
 # Ignore Python venv
 */venv/
+
+# Ignore pycache
+server/__pycache__/
+server/*/__pycache__/
