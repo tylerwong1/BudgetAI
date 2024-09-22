@@ -32,10 +32,12 @@ jobs:
     # Step 3: Install dependencies from requirements.txt
     - name: Install dependencies
       run: |
+        cd server
         python -m pip install --upgrade pip
-        pip install -r server/requirements.txt
+        pip install -r requirements.txt
 
     # Step 4: Run the unit tests in test.py
     - name: Run unit tests
       run: |
-        python -m unittest server/test.py
+        cd server
+        python -m unittest test.py
