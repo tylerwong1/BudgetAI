@@ -6,7 +6,7 @@ import uuid
 class User:
     """
     This class handles user authentication and session management
-    including signup, login, and logout functionalities.
+    including signup, login, and signout functionalities.
     """
     
     def start_session(self, user):
@@ -74,22 +74,3 @@ class User:
         """
         session.clear()  # Clear the session to log the user out
         return redirect('/')  # Redirect the user to the homepage
-    
-    def logout(self):
-        """
-        Log out the current user by clearing session data and removing user information.
-
-        This method also provides additional clean-up if necessary, such as logging the logout action.
-
-        Returns:
-            A JSON response indicating that the user has successfully logged out.
-        """
-        self.end_session()  # Call end_session to clear the session data
-        return jsonify({"message": "Successfully logged out"}), 200
-
-    def end_session(self):
-        """
-        Clear all session data for the logged-in user. This method ensures that all
-        user-related information is removed from the session to prevent unauthorized access.
-        """
-        session.clear()  # Clear all session data

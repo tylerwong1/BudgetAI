@@ -29,12 +29,3 @@ def login():
     Expects a JSON payload with login credentials.
     """
     return User().login()
-
-@user_routes.route('/logout', methods=['POST'])
-def logout():
-    """
-    Handle user logout requests.
-    Calls the logout method from the User model to end the user session.
-    Expects no additional payload.
-    """
-    return User().logout()
