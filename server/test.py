@@ -1,5 +1,5 @@
 import unittest
-from main import app  # Import the Flask app from main.py
+from app import app  # Import the Flask app from main.py
 
 class FlaskStatusTest(unittest.TestCase):
 
