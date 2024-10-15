@@ -24,8 +24,10 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --network mongodb-net
-          --restart unless-stopped
+          --health-cmd "echo 'db.runCommand({ ping: 1 })' | mongo test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     # Step 1: Check out the code from the repository
