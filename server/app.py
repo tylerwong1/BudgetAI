@@ -10,7 +10,6 @@ from users.routes import user_routes
 app = Flask(__name__)
 load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
-# app.secret_key = b'\xedN\xc3\xf9\xe9\xda\xa6\x80\xcf\xf3.f\x87\x1a\xce\x87'
 
 
 # Decorators
