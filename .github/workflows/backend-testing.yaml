@@ -24,10 +24,8 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd mongo --eval 'db.runCommand({ ping: 1 })'
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --network mongodb-net
+          --restart unless-stopped
 
     steps:
     # Step 1: Check out the code from the repository
@@ -46,8 +44,21 @@ jobs:
         cd server
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    
+    # Step 4: Wait for MongoDB
+    - name: Wait for MongoDB
+      run: |
+        echo "Waiting for MongoDB to start..."
+        for i in {1..30}; do
+          if echo 'db.runCommand({ ping: 1 })' | mongo --host mongo --quiet; then
+            echo "MongoDB is ready!"
+            break
+          fi
+          echo "MongoDB is not ready yet. Waiting..."
+          sleep 5
+        done
 
-    # Step 4: Run the unit tests in test.py
+    # Step 5: Run the unit tests in test.py
     - name: Run unit tests
       run: |
         cd server
