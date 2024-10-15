@@ -1,5 +1,5 @@
 from flask import Blueprint
-from user.models import User
+from users.user import User
 
 # Create a Blueprint for user-related routes
 user_routes = Blueprint('user', __name__)

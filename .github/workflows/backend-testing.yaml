@@ -40,4 +40,4 @@ jobs:
     - name: Run unit tests
       run: |
         cd server
-        python -m unittest test.py
+        python -m unittest discover -s tests -p "*.py" -v

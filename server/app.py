@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import Flask, jsonify, redirect, session
-from user.routes import user_routes
-from database import client  # Assuming this imports the database client
+from users.routes import user_routes
 
 # Application
 app = Flask(__name__)
