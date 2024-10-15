@@ -1,10 +1,12 @@
 from flask import Blueprint
+
 from users.user import User
 
 # Create a Blueprint for user-related routes
-user_routes = Blueprint('user', __name__)
+user_routes = Blueprint("user", __name__)
 
-@user_routes.route('/signup', methods=['POST'])
+
+@user_routes.route("/signup", methods=["POST"])
 def signup():
     """
     Handle user signup requests.
@@ -13,7 +15,8 @@ def signup():
     """
     return User().signup()
 
-@user_routes.route('/signout')
+
+@user_routes.route("/signout")
 def signout():
     """
     Handle user sign-out requests.
@@ -21,7 +24,8 @@ def signout():
     """
     return User().signout()
 
-@user_routes.route('/login', methods=['POST'])
+
+@user_routes.route("/login", methods=["POST"])
 def login():
     """
     Handle user login requests.

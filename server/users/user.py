@@ -1,7 +1,10 @@
-from flask import jsonify, request, session, redirect
-from passlib.hash import pbkdf2_sha256
-from database import get_login_system_db
 import uuid
+
+from flask import jsonify, redirect, request, session
+from passlib.hash import pbkdf2_sha256
+
+from database import get_login_system_db
+
 
 class User:
     """
@@ -20,31 +23,31 @@ class User:
         for user management.
         """
         self.db, self.client = get_login_system_db()
-    
+
     def __del__(self):
         """
         Cleans up the database client when the User object is deleted,
         ensuring proper resource management.
         """
         self.client.close()
-    
+
     def start_session(self, user):
         """
         Starts a user session after successful login or signup.
         Removes the password from the user data for security,
         marks the user as logged in, and stores the user's data in the session.
-        
+
         Parameters:
             user (dict): User data to store in the session.
 
         Returns:
             jsonify: JSON response containing the user data without the password.
         """
-        del user['password']  # Remove password for security reasons
-        session['logged_in'] = True  # Mark the user as logged in
-        session['user'] = user  # Store the user's data in the session
+        del user["password"]  # Remove password for security reasons
+        session["logged_in"] = True  # Mark the user as logged in
+        session["user"] = user  # Store the user's data in the session
         return jsonify(user)
-    
+
     def signup(self):
         """
         Handles user signup process, including validation of input data,
@@ -68,21 +71,21 @@ class User:
             "_id": uuid.uuid4().hex,  # Generate unique user ID
             "name": data["name"],
             "email": data["email"],
-            "password": data["password"]
+            "password": data["password"],
         }
-        
+
         # Hash the user's password before storing it
-        user['password'] = pbkdf2_sha256.hash(user['password'])
-        
+        user["password"] = pbkdf2_sha256.hash(user["password"])
+
         # Check if the email address is already registered
         if self.db["users"].find_one({"email": user["email"]}):
             return jsonify({"error": "Email address already in use"}), 400
-        
+
         # Add the user to the database
         if self.db["users"].insert_one(user):
             # Start session if signup is successful
             return self.start_session(user)
-        
+
         # If insertion fails, return a signup failure response
         return jsonify({"error": "Signup failed"}), 400
 
@@ -95,7 +98,7 @@ class User:
             redirect: Redirects to the homepage after logging out.
         """
         session.clear()  # Clear the session to log the user out
-        return redirect('/')  # Redirect the user to the homepage
+        return redirect("/")  # Redirect the user to the homepage
 
     def login(self):
         """
@@ -113,10 +116,10 @@ class User:
         # Check if all required fields are provided
         if not data or not all(key in data for key in ("email", "password")):
             return jsonify({"error": "Missing required fields"}), 400
-        
+
         user = self.db["users"].find_one({"email": data["email"]})
-        
+
         if user and pbkdf2_sha256.verify(data["password"], user["password"]):
             return self.start_session(user)
-        
+
         return jsonify({"error": "Invalid login credentials"}), 401
