@@ -9,7 +9,7 @@ def get_login_system_db():
         "FLASK_ENV", "production"
     )  # Default to 'production' if not set
     if environment == "test":
-        db = client["test_user_login_system"]
+        db = client["test_budgetai_db"]
     else:
-        db = client["prod_user_login_system"]
+        db = client["prod_budgetai_db"]
     return db, client
