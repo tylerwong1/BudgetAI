@@ -2,7 +2,7 @@ import os
 import unittest
 
 from app import app
-from database import get_login_system_db
+from database import get_budgetai_db
 
 
 class UserLoginTest(unittest.TestCase):
@@ -35,7 +35,7 @@ class UserLoginTest(unittest.TestCase):
         Configures the application to use a test database.
         """
         os.environ["FLASK_ENV"] = "test"  # Use the test environment
-        cls.db, cls.client = get_login_system_db()
+        cls.db, cls.client = get_budgetai_db()
 
     @classmethod
     def tearDownClass(cls):
