@@ -1,15 +1,11 @@
-name: CI
+name: Frontend Deployment # Static Deployment of Frontend to GitHub Pages
 
 on:
   push:
     branches:
       - main
     paths:
-      - './client/src/*.tsx'
-      - './client/src/*.css'
-      - './client/index.html'
-      - './server/*.py'
-
+      - 'client/**'   # Only run on changes in the client folder
   workflow_dispatch:
 
 jobs:

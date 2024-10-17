@@ -1,0 +1,45 @@
+name: Backend Testing
+
+# Trigger the workflow on push or pull requests to the 'main' branch
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'   # Only run on changes in the client folder
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'server/**'   # Only run on changes in the client folder
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # The OS that the tests will run on
+
+    steps:
+    # Step 1: Check out the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Step 2: Set up Python environment
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # Specify the Python version (e.g., 3.8, 3.9, etc.)
+
+    # Step 3: Install dependencies from requirements.txt
+    - name: Install dependencies
+      run: |
+        cd server
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Step 4: Run the unit tests in test.py
+    - name: Run unit tests
+      run: |
+        cd server
+        # python -m unittest discover -s tests -p "*.py" -v
+        python -m unittest tests/test_flask_status.py
+
