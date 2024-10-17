@@ -1,11 +1,11 @@
 "use client";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
-  FormDescription,
   FormControl,
   FormField,
   FormItem,
@@ -22,15 +22,14 @@ const formSchema = z.object({
     .max(50, { message: "Username must not exceed 50 characters." }),
 
     email: z
-      .string().email(),
+      .string().email({ message: "Invalid email address." }),
 
     password: z
       .string()
-      .min(8),
+      .min(8, { message: "Password must be at least 8 characters." }),
 
     confirmPassword: z
-    .string()
-    .min(8),
+    .string(),
 }).superRefine(({ confirmPassword, password }, ctx) => {
   if (confirmPassword !== password) {
     ctx.addIssue({
@@ -41,12 +40,21 @@ const formSchema = z.object({
   }
 });
 
-export default function ProfileForm() {
-  // Define form with useForm hook and zodResolver for schema validation
+export default function SignUp() {
+  const [hasUpCase, setHasUpCase] = useState(false);
+  const [hasLowCase, setHasLowCase] = useState(false);
+  const [hasNum, setHasNum] = useState(false);
+  const [hasSpecial, setHasSpecial] = useState(false);
+  const [hasAllParts, setHasAllParts] = useState(false);
+  const [isPasswordGood, setIsPasswordGood] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -54,77 +62,107 @@ export default function ProfileForm() {
     console.log(values);
   }
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="minimum 5 characters" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="Used for user validation" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="Min. 8 characters" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Enter Password Again</FormLabel>
-              <FormControl>
-                <Input placeholder="Making sure you know it 😉" {...field} />
-              </FormControl>
-              <FormDescription>
-                Passwords must be:
-                  <ul>
-                    <li>At least 8 character long</li>
-                    <li>Have a minimum include:
-                      <li>A lower case letter</li>
-                      <li>A upper case letter</li>
-                      <li>A number</li>
-                      <li>A special character (!,@,$,#, etc.)</li>
-                    </li>
-                  </ul>
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+  const passwordWarden = form.watch("password");
+  useEffect(() => {
+    const password = form.getValues().password;
+    const upperCaseRegex = /.*[A-Z].*/;
+    const lowerCaseRegex = /.*[a-z].*/;
+    const numberRegex = /.*[0-9].*/;
+    const specialCharRegex = /.*[^a-zA-Z0-9].*/;
 
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
-    
+    // Temp vars because useState does not update until after useEffect is complete!
+    const upTest = upperCaseRegex.test(password);
+    const lowTest = lowerCaseRegex.test(password);
+    const numberTest = numberRegex.test(password);
+    const specialTest = specialCharRegex.test(password);
+
+    setHasUpCase(upTest);
+    setHasLowCase(lowTest);
+    setHasNum(numberTest);
+    setHasSpecial(specialTest);
+    setHasAllParts(upTest && lowTest && numberTest && specialTest);
+    setIsPasswordGood(upTest && lowTest && numberTest && specialTest && (password.length > 7));
+  }, [passwordWarden]);
+
+
+  return (
+    <div>
+      <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="minimum 5 characters" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Used for user validation" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Min. 8 characters" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+          {isPasswordGood ? (<h3 className="text-complete">That is a nice password!</h3>) : 
+          <div>
+            <h3>Passwords must be:</h3>
+            <ul>
+              <li  className={"text-" + (form.getValues().password.length > 7 ? "complete" : "destructive")}>At least 8 character long</li>
+              <li className={"text-" + (hasAllParts ? "complete" : "destructive")}> {hasAllParts ?  "has all character types covered" : "Have a minimum include:"}
+                {!hasAllParts && <ul>
+                  <li className={"text-" + (hasLowCase ? "complete" : "destructive")}>A lower case letter</li>
+                  <li className={"text-" + (hasUpCase ? "complete" : "destructive")}>A upper case letter</li>
+                  <li className={"text-" + (hasNum ? "complete" : "destructive")}>A number</li>
+                  <li className={"text-" + (hasSpecial ? "complete" : "destructive")}>A special character (like !, $, %, or ?)</li>
+                </ul>}
+              </li>
+            </ul>
+          </div>
+        }
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Enter Password Again</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Making sure you know it 😉" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+    </div>
   );
 }
