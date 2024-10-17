@@ -14,6 +14,9 @@ export default {
   		},
   		colors: {
   			background: 'var(--background)',
+  			content: {
+				bg: 'var(--content-bg)'
+			},
   			foreground: 'var(--foreground)',
   			card: {
   				DEFAULT: 'var(--card)',
