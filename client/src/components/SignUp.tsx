@@ -32,7 +32,22 @@ const formSchema = z.object({
     confirmPassword: z
     .string(),
 }).superRefine(({ confirmPassword, password }, ctx) => {
-  if (confirmPassword !== password) {
+  const upperCaseRegex = /.*[A-Z].*/;
+  const lowerCaseRegex = /.*[a-z].*/;
+  const numberRegex = /.*[0-9].*/;
+  const specialCharRegex = /.*[^a-zA-Z0-9].*/;
+  if (!upperCaseRegex.test(password) ||
+      !lowerCaseRegex.test(password) ||
+      !numberRegex.test(password) ||
+      !specialCharRegex.test(password)){
+        ctx.addIssue({
+          code: "custom",
+          message: "The password does not have all required characters!",
+          path: ['password']
+        });
+
+      }
+  else if (confirmPassword !== password) {
     ctx.addIssue({
       code: "custom",
       message: "The passwords did not match",
@@ -62,6 +77,10 @@ export default function SignUp() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!isPasswordGood) {
+      alert("Password must meet the required criteria!");
+      return;
+    }
     console.log("Submitted values:\n", values);
     navigate("/home");
   }
@@ -95,7 +114,7 @@ export default function SignUp() {
 
       {/* Password Helper - Shows if the password will be accepted! */}
       {isEditingPassword && <div className="bg-input text-left card w-1/5 absolute bottom-50 left-20">
-            {isPasswordGood ? (<h3 className="text-complete">That is a nice password!</h3>) : 
+            {isPasswordGood ? (<h3 className="text-complete font-bold">That is a nice password!</h3>) : 
               <div>
                 <h2>Passwords must be:</h2>
                 <ul>
