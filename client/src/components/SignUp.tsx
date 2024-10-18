@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -47,6 +48,8 @@ export default function SignUp() {
   const [hasSpecial, setHasSpecial] = useState(false);
   const [hasAllParts, setHasAllParts] = useState(false);
   const [isPasswordGood, setIsPasswordGood] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,7 +62,8 @@ export default function SignUp() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    console.log("Submitted values:\n", values);
+    navigate("/home");
   }
 
   const passwordWarden = form.watch("password");
@@ -82,87 +86,97 @@ export default function SignUp() {
     setHasSpecial(specialTest);
     setHasAllParts(upTest && lowTest && numberTest && specialTest);
     setIsPasswordGood(upTest && lowTest && numberTest && specialTest && (password.length > 7));
-  }, [passwordWarden]);
+  }, [passwordWarden, form]);
 
 
   return (
-    <div>
-      <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="minimum 5 characters" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Used for user validation" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Min. 8 characters" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <div className="content-holder">
+      <h1>Sign Up</h1>
 
-
-          {isPasswordGood ? (<h3 className="text-complete">That is a nice password!</h3>) : 
-          <div>
-            <h3>Passwords must be:</h3>
-            <ul>
-              <li  className={"text-" + (form.getValues().password.length > 7 ? "complete" : "destructive")}>At least 8 character long</li>
-              <li className={"text-" + (hasAllParts ? "complete" : "destructive")}> {hasAllParts ?  "has all character types covered" : "Have a minimum include:"}
-                {!hasAllParts && <ul>
-                  <li className={"text-" + (hasLowCase ? "complete" : "destructive")}>A lower case letter</li>
-                  <li className={"text-" + (hasUpCase ? "complete" : "destructive")}>A upper case letter</li>
-                  <li className={"text-" + (hasNum ? "complete" : "destructive")}>A number</li>
-                  <li className={"text-" + (hasSpecial ? "complete" : "destructive")}>A special character (like !, $, %, or ?)</li>
-                </ul>}
-              </li>
-            </ul>
+      {/* Password Helper - Shows if the password will be accepted! */}
+      {isEditingPassword && <div className="bg-input text-left card w-1/5 absolute bottom-50 left-20">
+            {isPasswordGood ? (<h3 className="text-complete">That is a nice password!</h3>) : 
+              <div>
+                <h2>Passwords must be:</h2>
+                <ul>
+                  <li  className={"text-" + (form.getValues().password.length > 7 ? "complete" : "destructive")}>At least 8 character long</li>
+                  <li className={"text-" + (hasAllParts ? "complete" : "destructive")}> {hasAllParts ?  "has all character types covered" : "Have a minimum include:"}
+                    {!hasAllParts && <ul className="text-sm list-dot">
+                      <li className={"text-" + (hasLowCase ? "complete" : "destructive")}>A lower case letter</li>
+                      <li className={"text-" + (hasUpCase ? "complete" : "destructive")}>A upper case letter</li>
+                      <li className={"text-" + (hasNum ? "complete" : "destructive")}>A number</li>
+                      <li className={"text-" + (hasSpecial ? "complete" : "destructive")}>A special character (like !, $, %, or ?)</li>
+                    </ul>}
+                  </li>
+                </ul>
+              </div>
+          }
           </div>
-        }
+      }
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Enter Password Again</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Making sure you know it 😉" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Submit</Button>
-          </form>
-        </Form>
+      <div className="content-card card">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="minimum 5 characters" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Used for user validation" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Min. 8 characters" {...field} 
+                        onFocus= {() => setIsEditingPassword(true)}                
+                        onBlur= {() => setIsEditingPassword(false)}/>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Enter Password Again</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Making sure you know it 😉" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          <Button type="submit" className="m-2">Submit</Button>
+          <Link to="/login">Already have an account? Click here!</Link>
+            </form>
+          </Form>
+      </div>
     </div>
   );
 }

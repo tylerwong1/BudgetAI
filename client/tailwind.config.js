@@ -46,7 +46,6 @@ export default {
   				DEFAULT: 'var(--destructive)',
   				foreground: 'var(--destructive-foreground)'
   			},
-			complete: 'var(--complete)',
   			border: 'var(--border)',
   			input: 'var(--input)',
   			ring: 'var(--ring)',
@@ -56,7 +55,13 @@ export default {
   				'3': 'var(--chart-3)',
   				'4': 'var(--chart-4)',
   				'5': 'var(--chart-5)'
-  			}
+  			},
+
+			
+			complete: 'var(--complete)',
+			navbar: {
+				bg: 'var(--navbar-bg)'
+			},
   		}
   	}
   },

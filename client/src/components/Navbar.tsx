@@ -5,16 +5,18 @@ import "@/styles/Navbar.css";
 
 function Navbar() {
   return (
-    <nav className="bg-foreground text-background navbar">
+    <nav className="navbar">
         <div className="navbar-container">
             <div className="navbar-left-container">
             <Link to="/" className="navbar-image">
-                <Home height={40} className="text-foreground" />
+                <Home className="text-foreground" />
             </Link>
             </div>
         </div>
         <div className="navbar-right-container">
-            <ModeToggle />
+            <div className="navbar-image">
+              <ModeToggle />
+            </div>
         </div>
     </nav>
   );
