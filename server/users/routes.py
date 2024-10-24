@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, session
+from flask import Blueprint
 
 from users.user import User
 
@@ -33,8 +33,3 @@ def login():
     Expects a JSON payload with login credentials.
     """
     return User().login()
-
-
-# @user_routes.route("/test_session", methods=["GET"])
-# def test_session():
-#     return jsonify({"session": dict(session)}), 200
