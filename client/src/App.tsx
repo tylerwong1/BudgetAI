@@ -9,10 +9,11 @@ import "./styles/App.css";
 
 function App() {
   return (
+
     <div className="site-holder">
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <Router basename="/BudgetAI">
-          <Navbar />
+        <Navbar />
           <div className="page-holder">
             <Routes>
               {/* Removed for now, add back later!!!  
