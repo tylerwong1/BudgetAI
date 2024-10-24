@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * Custom Enums to track where the user is for the NavBar to adjust with its links
@@ -16,6 +16,7 @@ export enum NavigationState {
 */
 export const useCheckLoggedIn = (): void => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -23,7 +24,7 @@ export const useCheckLoggedIn = (): void => {
     if (!isLoggedIn || isLoggedIn !== 'true') {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate, location]);
 };
 
 /**  
@@ -32,12 +33,40 @@ export const useCheckLoggedIn = (): void => {
 */
 export const useCheckSaveLogin = (): void => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-    if (isLoggedIn && isLoggedIn == 'true') {
+    if (isLoggedIn === 'true') {
       navigate('/home');
     }
-  }, [navigate]);
+  }, [navigate, location]);
+};
+
+/**
+ * Custom hook to manage navigation state based on current route.
+ */
+export const useNavigationState = (): NavigationState => {
+  const location = useLocation();
+  const [currentState, setCurrentState] = useState<NavigationState>(NavigationState.LOG_IN);
+
+  useEffect(() => {
+    switch (location.pathname) {
+      case '/login':
+      case '/signup':
+        setCurrentState(NavigationState.LOG_IN);
+        break;
+      case '/home':
+      case '/upload-data':
+      case '/analysis':
+      case '/chat':
+        setCurrentState(NavigationState.MAIN_PAGES);
+        break;
+      default:
+        setCurrentState(NavigationState.INTRO); // Default state can be INTRO
+    }
+  }, [location]);
+
+  return currentState;
 };
