@@ -58,7 +58,7 @@ export const useNavigationState = (): NavigationState => {
         setCurrentState(NavigationState.LOG_IN);
         break;
       case '/home':
-      case '/upload-data':
+      case '/upload':
       case '/analysis':
       case '/chat':
         setCurrentState(NavigationState.MAIN_PAGES);
@@ -70,7 +70,6 @@ export const useNavigationState = (): NavigationState => {
 
   return currentState;
 };
-
 
 export const getUserTrends = () => {
   return (["You spent 5% less on leisure this month",

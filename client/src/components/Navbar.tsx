@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "@/components/ModeToggle";
 import { NavigationState, useNavigationState } from "./UserPages/HandleUser";
 import "@/styles/Navbar.css";
@@ -23,13 +23,13 @@ function Navbar()  {
     <Link to="/" className="nav-links">
         BudgetAI
     </Link>
-    <Link to="/" className="nav-links">
+    <Link to="/upload" className="nav-links">
         Upload Data
     </Link>
-    <Link to="/" className="nav-links">
+    <Link to="/analysis" className="nav-links">
         Analysis
     </Link>
-    <Link to="/" className="nav-links">
+    <Link to="/chat" className="nav-links">
         Chat
     </Link>
     <div className="nav-links"

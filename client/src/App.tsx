@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
 import LandingPage from "./components/UserPages/LandingPage";
+import CsvUploadPage from "./components/UserPages/Upload";
 import { ThemeProvider } from "@/components/ThemeProvider"
 import "./styles/App.css";
 
@@ -24,6 +25,7 @@ function App() {
 
               {/* All protected pages requiring the user to log in first! */}
               <Route path="/home" Component={LandingPage} />
+              <Route path="/upload" Component={CsvUploadPage} />
             </Routes>
           </div>
         </Router>

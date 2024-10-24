@@ -1,5 +1,4 @@
-import {useCheckLoggedIn, getUserTrends} from "@/components/UserPages/HandleUser"
-import "@/styles/MainPage.css"
+import {useCheckLoggedIn, getUserTrends} from "@/components/UserPages/HandleUser";
 
 function LandingPage() {
     useCheckLoggedIn();
