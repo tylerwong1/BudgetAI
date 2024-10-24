@@ -14,7 +14,7 @@ export enum NavigationState {
  * Custom hook for checking if user is logged in.
  * When invoked, if the user isn't logged in, it returns them to the log in page!
 */
-export const useAuthCheck = (): void => {
+export const useCheckLoggedIn = (): void => {
   const navigate = useNavigate();
 
   useEffect(() => {

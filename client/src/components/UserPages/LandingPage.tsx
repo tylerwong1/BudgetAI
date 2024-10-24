@@ -1,8 +1,8 @@
-import {useAuthCheck} from "@/components/UserPages/HandleUser"
+import {useCheckLoggedIn} from "@/components/UserPages/HandleUser"
 import "@/styles/MainPage.css"
 
 function LandingPage() {
-    useAuthCheck();
+    useCheckLoggedIn();
     return(
         <div>
         </div>
