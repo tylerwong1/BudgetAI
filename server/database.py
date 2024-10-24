@@ -3,7 +3,7 @@ import os
 from pymongo import MongoClient
 
 
-def get_login_system_db():
+def get_budgetai_db():
     client = MongoClient("mongodb://localhost:27017/")
     environment = os.getenv(
         "FLASK_ENV", "production"

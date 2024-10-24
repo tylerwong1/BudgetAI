@@ -2,14 +2,19 @@ import os
 from functools import wraps
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, session
+from flask import Flask, jsonify, redirect, request, session
+from werkzeug.utils import secure_filename
 
+from upload.upload import Upload
 from users.routes import user_routes
 
 # Application
 app = Flask(__name__)
 load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.config["SESSION_COOKIE_NAME"] = "budgetai_session"
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["UPLOAD_FOLDER"] = "files"
 
 
 # Decorators
@@ -50,7 +55,7 @@ def home():
 
 
 @app.route("/dashboard")
-@login_required  # Apply the login_required decorator to this route
+@login_required
 def dashboard():
     """
     Dashboard route.
@@ -69,6 +74,37 @@ def status():
     Returns a JSON response indicating that the application is running.
     """
     return jsonify({"message": "Application is running"}), 200
+
+
+@app.route("/upload", methods=["POST"])
+@login_required
+def upload():
+    """
+    Upload route for processing a CSV file.
+    This route accepts a file upload directly.
+
+    Returns:
+        JSON response indicating success or failure of the upload process.
+    """
+    # Check if a file is part of the request
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    # Save the file to the upload folder
+    filename = secure_filename(file.filename)  # Secure the file name
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(file_path)  # Save the file to the upload folder
+
+    # Process the CSV file (you would replace this with your processing logic)
+    upload_instance = Upload()  # Create an instance of your upload processing class
+    upload_instance.process_csv(file_path)  # Process the CSV
+
+    return jsonify({"message": "File uploaded and processed successfully"}), 200
 
 
 if __name__ == "__main__":
