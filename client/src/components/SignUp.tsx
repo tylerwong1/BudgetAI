@@ -82,6 +82,8 @@ export default function SignUp() {
       return;
     }
     console.log("Submitted values:\n", values);
+    localStorage.setItem('user', values.username);
+    localStorage.setItem('isLoggedIn', 'true');
     navigate("/home");
   }
 

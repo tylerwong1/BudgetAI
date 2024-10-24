@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
+//import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
+import LandingPage from "./components/UserPages/LandingPage";
 import { ThemeProvider } from "@/components/ThemeProvider"
 import "./styles/App.css";
 
@@ -14,9 +15,14 @@ function App() {
           <Navbar />
           <div className="page-holder">
             <Routes>
-              <Route path="/" Component={Home} />
+              {/* Removed for now, add back later!!!  
+              <Route path="/" Component={Home} /> */}
+              <Route path="/" Component={SignUp} />
               <Route path="/signup" Component={SignUp} />
               <Route path="/login" Component={Login} />
+
+              {/* All protected pages requiring the user to log in first! */}
+              <Route path="/home" Component={LandingPage} />
             </Routes>
           </div>
         </Router>

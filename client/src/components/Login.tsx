@@ -36,7 +36,9 @@ export default function Login() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    navigate("/home")
+    localStorage.setItem('user', values.username);
+    localStorage.setItem('isLoggedIn', 'true');
+    navigate("/home");
   }
 
   return (
