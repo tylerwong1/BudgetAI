@@ -20,8 +20,24 @@ export const useCheckLoggedIn = (): void => {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-    if (isLoggedIn !== 'true') {
+    if (!isLoggedIn || isLoggedIn !== 'true') {
       navigate('/login');
+    }
+  }, [navigate]);
+};
+
+/**  
+ * Custom hook for checking if user is logged in.
+ * When invoked, if the user is logged in, it returns them to the home page!
+*/
+export const useCheckSaveLogin = (): void => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+    if (isLoggedIn && isLoggedIn == 'true') {
+      navigate('/home');
     }
   }, [navigate]);
 };

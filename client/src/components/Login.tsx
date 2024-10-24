@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCheckSaveLogin } from "./UserPages/HandleUser";
 
 // Define the schema for validation using Zod
 const formSchema = z.object({
@@ -25,6 +26,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  useCheckSaveLogin();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

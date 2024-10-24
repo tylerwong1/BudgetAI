@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCheckSaveLogin } from "./UserPages/HandleUser";
 
 // Define the schema for validation using Zod
 const formSchema = z.object({
@@ -57,6 +58,8 @@ const formSchema = z.object({
 });
 
 export default function SignUp() {
+  useCheckSaveLogin();
+
   const [hasUpCase, setHasUpCase] = useState(false);
   const [hasLowCase, setHasLowCase] = useState(false);
   const [hasNum, setHasNum] = useState(false);

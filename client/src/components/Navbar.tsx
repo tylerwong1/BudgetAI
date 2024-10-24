@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation} from "react-router-dom";
-import { Home } from "lucide-react";
 import { ModeToggle } from "@/components/ModeToggle";
 import { NavigationState } from "./UserPages/HandleUser";
 import "@/styles/Navbar.css";
