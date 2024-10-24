@@ -70,3 +70,10 @@ export const useNavigationState = (): NavigationState => {
 
   return currentState;
 };
+
+
+export const getUserTrends = () => {
+  return (["You spent 5% less on leisure this month",
+          "Your spending is down 2.5% this month",
+          "Your spending this year went down by $318!"]);
+};
