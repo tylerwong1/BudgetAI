@@ -10,4 +10,4 @@ http --session=budgetai_session POST http://localhost:8080/user/login email="joh
 
 http --session=budgetai_session --form POST http://localhost:8080/upload file@files/chase_freedom.csv
 
-http --session=budgetai_session POST http://localhost:8080/user/wipe
+http --session=budgetai_session POST http://localhost:8080/user/wipe password="password123"
