@@ -183,6 +183,7 @@ class UserLoginTest(unittest.TestCase):
     def test_wipe(self):
         """
         Test the user wiping process.
+        Validates that a logged in user can wipe their data.
         """
         self.app.post(
             "/user/signup",
@@ -208,6 +209,7 @@ class UserLoginTest(unittest.TestCase):
     def test_invalid_wipe(self):
         """
         Test the user wiping process.
+        Verifies that invalid credentials do not wipe user data.
         """
         self.app.post(
             "/user/signup",
