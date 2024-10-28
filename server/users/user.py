@@ -105,17 +105,6 @@ class User:
 
         return jsonify({"error": "Signup failed"}), 400
 
-    def signout(self):
-        """
-        Logs the user out by clearing the session data and redirects
-        the user to the homepage.
-
-        Returns:
-            redirect: Redirects to the homepage after logging out.
-        """
-        session.clear()  # Clear the session to log the user out
-        return redirect("/")  # Redirect the user to the homepage
-
     def login(self):
         """
         Handles user login process by validating provided credentials,
@@ -143,3 +132,45 @@ class User:
             return self.start_session(user_profile)
 
         return jsonify({"error": "Invalid login credentials"}), 401
+
+    def signout(self):
+        """
+        Logs the user out by clearing the session data and redirects
+        the user to the homepage.
+
+        Returns:
+            redirect: Redirects to the homepage after logging out.
+        """
+        session.clear()  # Clear the session to log the user out
+        return redirect("/")  # Redirect the user to the homepage
+
+    def wipe(self):
+        """
+        Wipes user data from the database client and clears session.
+        """
+        # Verifies user is logged in
+        user = session.get("user")
+        if user is None:
+            return jsonify({"error": "User not logged in"}), 400
+        user_id = session.get("user", {}).get("_id")
+        if user_id is None:
+            return jsonify({"error": "User id not found"}), 400
+        
+        # Verifies inputed password
+        data = request.get_json()
+        if not data or "password" not in data:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        user_data = self.db["users"].find_one({"_id": user_id})
+        if not user_data:
+            return jsonify({"error": "User not found"}), 400
+        if not pbkdf2_sha256.verify(data["password"], user_data["password"]):
+            return jsonify({"error": "Invalid credentials"}), 400
+        
+        # Delete any corresponding transactions from database
+        self.db["transactions"].delete_many({"user_id": user_id})
+        # Delete user from database
+        self.db["users"].delete_one({"_id": user_id})
+        
+        session.clear()
+        return jsonify({"message": "User and associated transactions deleted successfully"}), 200

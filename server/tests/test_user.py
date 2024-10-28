@@ -1,16 +1,15 @@
 import os
 import unittest
 
-from passlib.hash import pbkdf2_sha256
-
 from app import app
 from database import get_budgetai_db
+from passlib.hash import pbkdf2_sha256
 
 
 class UserLoginTest(unittest.TestCase):
     """
     UserLoginTest is a unit test class that validates user authentication functionalities.
-    It includes tests for user signup, login, logout, and handling existing users.
+    It includes tests for user signup, login, signout, and handling existing users.
     """
 
     def setUp(self):
@@ -23,7 +22,7 @@ class UserLoginTest(unittest.TestCase):
         self.app.testing = True
         self.app_context = app.app_context()
         self.app_context.push()
-
+        
         # Define sample user data
         self.sample_user_data = {
             "name": "Test User",
@@ -61,33 +60,36 @@ class UserLoginTest(unittest.TestCase):
         Validates successful signup with valid input and asserts that user data is correctly inserted into the database.
         Checks that the password is encrypted.
         """
+        sample_user = {
+            "name": "Test Signup User",
+            "email": "testsignupuser@example.com",
+            "password": "password123",
+        }
+        
         # Create new user
         response = self.app.post(
             "/user/signup",
-            json=self.sample_user_data,
+            json=sample_user,
         )
 
         # Check if the response status code is 200
         self.assertEqual(response.status_code, 200)
-
+        
         # Verify inserted user data
         data = response.get_json()
-        self.assertEqual(data["name"], "Test User")
-        self.assertEqual(data["email"], "testuser@example.com")
+        self.assertEqual(data["name"], sample_user["name"])
+        self.assertEqual(data["email"], sample_user["email"])
 
         # Check if the user was inserted into the database
-        inserted_user = self.db["users"].find_one({"email": "testuser@example.com"})
+        inserted_user = self.db["users"].find_one({"email": sample_user["email"]})
         self.assertIsNotNone(inserted_user)
-        self.assertEqual(inserted_user["name"], self.sample_user_data["name"])
-
+        self.assertEqual(inserted_user["name"], sample_user["name"])
+        
         # Check if password is encrypted
-        self.assertNotEqual(inserted_user["password"], "password123")
+        self.assertNotEqual(inserted_user["password"], sample_user["password"])  
         # Check if passwords match
-        self.assertTrue(
-            pbkdf2_sha256.verify(
-                self.sample_user_data["password"], inserted_user["password"]
-            )
-        )
+        self.assertTrue(pbkdf2_sha256.verify(sample_user["password"], inserted_user["password"]))
+        
 
     def test_signup_existing_user(self):
         """
@@ -96,13 +98,17 @@ class UserLoginTest(unittest.TestCase):
         """
         self.app.post(
             "/user/signup",
-            json=self.sample_user_data,
+            json={
+                "name": "Test Existing User",
+                "email": "testexistinguser@example.com",
+                "password": "password123",
+            },
         )
         response = self.app.post(
             "/user/signup",
             json={
                 "name": "Another User",
-                "email": "test@example.com",
+                "email": "testexistinguser@example.com",
                 "password": "password456",
             },
         )
@@ -117,13 +123,13 @@ class UserLoginTest(unittest.TestCase):
         self.app.post(
             "/user/signup",
             json={
-                "name": "Test User",
-                "email": "test@example.com",
+                "name": "Test Login User",
+                "email": "testloginuser@example.com",
                 "password": "password123",
             },
         )
         response = self.app.post(
-            "/user/login", json={"email": "test@example.com", "password": "password123"}
+            "/user/login", json={"email": "testloginuser@example.com", "password": "password123"}
         )
         self.assertEqual(response.status_code, 200)  # Expecting a successful login
         self.assertIn(
@@ -138,15 +144,15 @@ class UserLoginTest(unittest.TestCase):
         self.app.post(
             "/user/signup",
             json={
-                "name": "Test User",
-                "email": "test@example.com",
+                "name": "Antonio",
+                "email": "antonio@example.com",
                 "password": "password123",
             },
         )
         response = self.app.post(
             "/user/login",
             json={
-                "email": "test@example.com",
+                "email": "antonio@example.com",
                 "password": "wrongpassword",  # Invalid password
             },
         )
@@ -163,16 +169,64 @@ class UserLoginTest(unittest.TestCase):
         self.app.post(
             "/user/signup",
             json={
-                "name": "Test User",
-                "email": "test@example.com",
+                "name": "Tony",
+                "email": "tony@example.com",
                 "password": "password123",
             },
         )
         self.app.post(
-            "/user/login", json={"email": "test@example.com", "password": "password123"}
+            "/user/login", json={"email": "tony@example.com", "password": "password123"}
         )
         response = self.app.get("/user/signout")
         self.assertEqual(response.status_code, 302)  # Expecting a redirect on signout
+
+    def test_wipe(self):
+        """
+        Test the user wiping process.
+        """
+        self.app.post(
+            "/user/signup",
+            json={
+                "name": "Test Wipe User",
+                "email": "testwipeuser@example.com",
+                "password": "password123",
+            },
+        )
+        self.app.post(
+            "/user/login", json={"email": "testwipeuser@example.com", "password": "password123"}
+        )
+        
+        # Wipe the user
+        wipe_response = self.app.post("/user/wipe", json={"password": "password123"})
+        self.assertEqual(wipe_response.status_code, 200)  # Expecting a successful wipe
+        self.assertEqual(wipe_response.get_json().get("message"), "User and associated transactions deleted successfully")
+
+        # Verify the user does not exist in the database
+        self.assertIsNone(self.db["users"].find_one({"email": "testwipeuser@example.com"}))
+    
+    
+    def test_invalid_wipe(self):
+        """
+        Test the user wiping process.
+        """
+        self.app.post(
+            "/user/signup",
+            json={
+                "name": "Test Wipe User",
+                "email": "testinvalidwipeuser@example.com",
+                "password": "password123",
+            },
+        )
+        self.app.post(
+            "/user/login", json={"email": "testinvalidwipeuser@example.com", "password": "password123"}
+        )
+        
+        # Wipe the user
+        wipe_response = self.app.post("/user/wipe", json={"password": "differentpassword"})
+        self.assertEqual(wipe_response.status_code, 400)  # Expecting an unsuccessful wipe
+
+        # Verify the user does not exist in the database
+        self.assertIsNotNone(self.db["users"].find_one({"email": "testinvalidwipeuser@example.com"}))
 
 
 if __name__ == "__main__":
