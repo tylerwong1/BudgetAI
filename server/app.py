@@ -82,5 +82,14 @@ def upload():
     return jsonify({"message": "File uploaded and processed successfully"}), 200
 
 
+@app.route("/status", methods=["GET"])
+def status():
+    """
+    Status route.
+    Returns a JSON response indicating that the application is running.
+    """
+    return jsonify({"message": "Application is running"}), 200
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=8080)  # Start the application in debug mode on port 8080
