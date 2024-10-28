@@ -24,11 +24,9 @@ class FlaskStatusTest(unittest.TestCase):
         - That the status code of the response is 200 (OK).
         - That the response JSON contains the expected message indicating the application is running.
         """
-        response = self.app.get("/status")  # Send GET request to /status
-        self.assertEqual(response.status_code, 200)  # Check if status code is 200
-        self.assertEqual(
-            response.json, {"message": "Application is running"}
-        )  # Check if response data is correct
+        response = self.app.get("/status")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {"message": "Application is running"})
 
 
 if __name__ == "__main__":

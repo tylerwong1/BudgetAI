@@ -44,9 +44,9 @@ class Upload:
             self.transaction_date = transaction_date
             self.description = description
             self.category = category
-            self.amount = amount      
+            self.amount = amount
 
-    def _create_transactions(self, transactions):
+    def create_transactions(self, transactions):
         """
         Creates multiple transactions in the database.
 
@@ -64,7 +64,7 @@ class Upload:
         except Exception as e:
             logging.error(f"Error inserting transactions into database: {str(e)}")
 
-    def _process_tuple(self, row, user_id):
+    def process_tuple(self, row, user_id):
         """
         Processes a valid row into a Transaction instance.
 
@@ -129,10 +129,10 @@ class Upload:
 
             for row in csv_reader:
                 # Process the valid row into a Transaction
-                transaction = self._process_tuple(row, user_id)
+                transaction = self.process_tuple(row, user_id)
                 if transaction:  # Only add if transaction creation was successful
                     transactions.append(transaction)  # Accumulate the transaction
 
         # Prepare to bulk insert transactions into the database
         if transactions:
-            self._create_transactions(transactions)  # Bulk insert transactions
+            self.create_transactions(transactions)  # Bulk insert transactions

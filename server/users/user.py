@@ -140,11 +140,6 @@ class User:
                 email=user_data["email"],
             )
             # Start a session with the user profile
-            session_response = self.start_session(user_profile)
-
-            # Manually print the session data for debugging
-            print("Session data after login:", session)  # Debugging print statement
-
-            return session_response
+            return self.start_session(user_profile)
 
         return jsonify({"error": "Invalid login credentials"}), 401

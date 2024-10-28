@@ -1,6 +1,8 @@
 import os
 import unittest
 
+from passlib.hash import pbkdf2_sha256
+
 from app import app
 from database import get_budgetai_db
 
@@ -21,6 +23,13 @@ class UserLoginTest(unittest.TestCase):
         self.app.testing = True
         self.app_context = app.app_context()
         self.app_context.push()
+
+        # Define sample user data
+        self.sample_user_data = {
+            "name": "Test User",
+            "email": "testuser@example.com",
+            "password": "password123",
+        }
 
     def tearDown(self):
         """
@@ -52,16 +61,16 @@ class UserLoginTest(unittest.TestCase):
         Validates successful signup with valid input and asserts that user data is correctly inserted into the database.
         Checks that the password is encrypted.
         """
+        # Create new user
         response = self.app.post(
             "/user/signup",
-            json={
-                "name": "Test User",
-                "email": "testuser@example.com",
-                "password": "password123",
-            },
+            json=self.sample_user_data,
         )
 
-        self.assertEqual(response.status_code, 200)  # Ensure signup succeeds
+        # Check if the response status code is 200
+        self.assertEqual(response.status_code, 200)
+
+        # Verify inserted user data
         data = response.get_json()
         self.assertEqual(data["name"], "Test User")
         self.assertEqual(data["email"], "testuser@example.com")
@@ -69,9 +78,16 @@ class UserLoginTest(unittest.TestCase):
         # Check if the user was inserted into the database
         inserted_user = self.db["users"].find_one({"email": "testuser@example.com"})
         self.assertIsNotNone(inserted_user)
-        self.assertNotEqual(
-            inserted_user["password"], "password123"
-        )  # Check if password is encrypted
+        self.assertEqual(inserted_user["name"], self.sample_user_data["name"])
+
+        # Check if password is encrypted
+        self.assertNotEqual(inserted_user["password"], "password123")
+        # Check if passwords match
+        self.assertTrue(
+            pbkdf2_sha256.verify(
+                self.sample_user_data["password"], inserted_user["password"]
+            )
+        )
 
     def test_signup_existing_user(self):
         """
@@ -80,11 +96,7 @@ class UserLoginTest(unittest.TestCase):
         """
         self.app.post(
             "/user/signup",
-            json={
-                "name": "Test User",
-                "email": "test@example.com",
-                "password": "password123",
-            },
+            json=self.sample_user_data,
         )
         response = self.app.post(
             "/user/signup",

@@ -54,28 +54,6 @@ def home():
     return "Home"
 
 
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    """
-    Dashboard route.
-    Accessible only to logged-in users.
-    Returns a string indicating the user's dashboard, along with their session information.
-    """
-    return (
-        "Dashboard: " + session["user"]["name"]
-    )  # Display the user's name from the session
-
-
-@app.route("/status", methods=["GET"])
-def status():
-    """
-    Status route.
-    Returns a JSON response indicating that the application is running.
-    """
-    return jsonify({"message": "Application is running"}), 200
-
-
 @app.route("/upload", methods=["POST"])
 @login_required
 def upload():
@@ -86,23 +64,20 @@ def upload():
     Returns:
         JSON response indicating success or failure of the upload process.
     """
-    # Check if a file is part of the request
+    # Validate the file
     if "file" not in request.files:
         return jsonify({"error": "No file part"}), 400
-
     file = request.files["file"]
-
     if file.filename == "":
         return jsonify({"error": "No selected file"}), 400
 
-    # Save the file to the upload folder
+    # Save the file to the flask upload folder
     filename = secure_filename(file.filename)  # Secure the file name
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     file.save(file_path)  # Save the file to the upload folder
 
-    # Process the CSV file (you would replace this with your processing logic)
-    upload_instance = Upload()  # Create an instance of your upload processing class
-    upload_instance.process_csv(file_path)  # Process the CSV
+    # Process the CSV file
+    Upload().process_csv(file_path)
 
     return jsonify({"message": "File uploaded and processed successfully"}), 200
 
