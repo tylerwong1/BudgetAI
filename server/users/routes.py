@@ -16,6 +16,16 @@ def signup():
     return User().signup()
 
 
+@user_routes.route("/login", methods=["POST"])
+def login():
+    """
+    Handle user login requests.
+    Calls the login method from the User model to authenticate a user.
+    Expects a JSON payload with login credentials.
+    """
+    return User().login()
+
+
 @user_routes.route("/signout")
 def signout():
     """
@@ -25,11 +35,9 @@ def signout():
     return User().signout()
 
 
-@user_routes.route("/login", methods=["POST"])
-def login():
+@user_routes.route("/wipe", methods=["POST"])
+def wipe():
     """
-    Handle user login requests.
-    Calls the login method from the User model to authenticate a user.
-    Expects a JSON payload with login credentials.
+    Enables wiping the user's data.
     """
-    return User().login()
+    return User().wipe()

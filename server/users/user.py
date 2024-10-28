@@ -1,28 +1,45 @@
+import re
 import uuid
 
 from flask import jsonify, redirect, request, session
 from passlib.hash import pbkdf2_sha256
 
-from database import get_login_system_db
+from database import get_budgetai_db
 
 
 class User:
     """
     User class handles user-related operations for the application, including
-    signup, login, logout (signout), and session management. It interacts with
-    the database to manage user data securely.
+    user authentication, session management, and transaction management. It
+    interacts with the database to manage user data securely.
 
     Attributes:
         db: Database connection for user operations.
         client: Database client for performing CRUD operations.
     """
 
+    class Profile:
+        def __init__(self, _id, name, email, password=None):
+            """
+            Initializes a user profile with basic attributes.
+
+            Parameters:
+                _id (str): User's unique identifier.
+                name (str): User's name.
+                email (str): User's email.
+                password (str): User's password.
+            """
+            self._id = _id
+            self.name = name
+            self.email = email
+            self.password = password
+
     def __init__(self):
         """
         Initializes the User class and establishes a connection to the database
         for user management.
         """
-        self.db, self.client = get_login_system_db()
+        self.db, self.client = get_budgetai_db()
 
     def __del__(self):
         """
@@ -31,22 +48,23 @@ class User:
         """
         self.client.close()
 
-    def start_session(self, user):
+    def start_session(self, user_profile):
         """
         Starts a user session after successful login or signup.
-        Removes the password from the user data for security,
-        marks the user as logged in, and stores the user's data in the session.
 
         Parameters:
-            user (dict): User data to store in the session.
+            user_profile (Profile): The user profile to store in the session.
 
         Returns:
             jsonify: JSON response containing the user data without the password.
         """
-        del user["password"]  # Remove password for security reasons
-        session["logged_in"] = True  # Mark the user as logged in
-        session["user"] = user  # Store the user's data in the session
-        return jsonify(user)
+        session["logged_in"] = True
+        session["user"] = {
+            "_id": user_profile._id,
+            "name": user_profile.name,
+            "email": user_profile.email,
+        }  # Store profile data in session
+        return jsonify(session["user"])
 
     def signup(self):
         """
@@ -62,32 +80,58 @@ class User:
         """
         data = request.get_json()
 
-        # Check if all required fields are provided
+        # Check for required fields
         if not data or not all(key in data for key in ("name", "email", "password")):
             return jsonify({"error": "Missing required fields"}), 400
 
-        # Create the user object with a unique ID
-        user = {
-            "_id": uuid.uuid4().hex,  # Generate unique user ID
-            "name": data["name"],
-            "email": data["email"],
-            "password": data["password"],
-        }
+        # Create a user profile
+        user_profile = self.Profile(_id=uuid.uuid4().hex, **data)
 
-        # Hash the user's password before storing it
-        user["password"] = pbkdf2_sha256.hash(user["password"])
+        # Validate the user's email format
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", user_profile.email):
+            return jsonify({"error": "Invalid email format"}), 400
+
+        # Hash the user's password
+        user_profile.password = pbkdf2_sha256.hash(user_profile.password)
 
         # Check if the email address is already registered
-        if self.db["users"].find_one({"email": user["email"]}):
+        if self.db["users"].find_one({"email": user_profile.email}):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Add the user to the database
-        if self.db["users"].insert_one(user):
+        if self.db["users"].insert_one(user_profile.__dict__):
             # Start session if signup is successful
-            return self.start_session(user)
+            return self.start_session(user_profile)
 
-        # If insertion fails, return a signup failure response
         return jsonify({"error": "Signup failed"}), 400
+
+    def login(self):
+        """
+        Handles user login process by validating provided credentials,
+        retrieving the user profile, and starting a session if successful.
+
+        Returns:
+            jsonify: JSON response indicating success or error.
+        """
+        data = request.get_json()
+
+        # Check if all required fields are provided
+        if not data or not all(key in data for key in ("email", "password")):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Retrieve user from database
+        user_data = self.db["users"].find_one({"email": data["email"]})
+
+        if user_data and pbkdf2_sha256.verify(data["password"], user_data["password"]):
+            user_profile = self.Profile(
+                _id=user_data["_id"],
+                name=user_data["name"],
+                email=user_data["email"],
+            )
+            # Start a session with the user profile
+            return self.start_session(user_profile)
+
+        return jsonify({"error": "Invalid login credentials"}), 401
 
     def signout(self):
         """
@@ -100,26 +144,33 @@ class User:
         session.clear()  # Clear the session to log the user out
         return redirect("/")  # Redirect the user to the homepage
 
-    def login(self):
+    def wipe(self):
         """
-        Handles user login process by validating provided credentials,
-        checking against stored user data, and starting a session if successful.
-
-        Validates the input data, retrieves the user from the database,
-        verifies the password, and returns an appropriate response.
-
-        Returns:
-            jsonify: JSON response indicating success or error.
+        Wipes user data from the database client and clears session.
         """
+        # Verifies user is logged in
+        user = session.get("user")
+        if user is None:
+            return jsonify({"error": "User not logged in"}), 400
+        user_id = session.get("user", {}).get("_id")
+        if user_id is None:
+            return jsonify({"error": "User id not found"}), 400
+        
+        # Verifies inputed password
         data = request.get_json()
-
-        # Check if all required fields are provided
-        if not data or not all(key in data for key in ("email", "password")):
+        if not data or "password" not in data:
             return jsonify({"error": "Missing required fields"}), 400
-
-        user = self.db["users"].find_one({"email": data["email"]})
-
-        if user and pbkdf2_sha256.verify(data["password"], user["password"]):
-            return self.start_session(user)
-
-        return jsonify({"error": "Invalid login credentials"}), 401
+        
+        user_data = self.db["users"].find_one({"_id": user_id})
+        if not user_data:
+            return jsonify({"error": "User not found"}), 400
+        if not pbkdf2_sha256.verify(data["password"], user_data["password"]):
+            return jsonify({"error": "Invalid credentials"}), 400
+        
+        # Delete any corresponding transactions from database
+        self.db["transactions"].delete_many({"user_id": user_id})
+        # Delete user from database
+        self.db["users"].delete_one({"_id": user_id})
+        
+        session.clear()
+        return jsonify({"message": "User and associated transactions deleted successfully"}), 200
