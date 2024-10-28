@@ -1,13 +1,12 @@
 import os
-from functools import wraps
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, request, session
-from werkzeug.utils import secure_filename
+from flask import Flask, jsonify
 
-from upload.upload import Upload
-from users.routes import user_routes
-from utils.routes import query_routes
+from routes.query_routes import query_routes
+from routes.upload_routes import upload_routes
+from routes.user_routes import user_routes
+from utils.upload import Upload
 
 # Application
 app = Flask(__name__)
@@ -17,72 +16,17 @@ app.config["SESSION_COOKIE_NAME"] = "budgetai_session"
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "files"
 
-
-# Decorators
-def login_required(f):
-    """
-    Decorator to restrict access to certain routes to logged-in users only.
-    If the user is not logged in, they are redirected to the home page.
-
-    Args:
-        f: The original function to be wrapped.
-
-    Returns:
-        The wrapped function or a redirect to the home page.
-    """
-
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        # Check if user is logged in via session
-        if "logged_in" in session:
-            return f(*args, **kwargs)  # Proceed to the requested function
-        else:
-            return redirect("/")  # Redirect to home if not logged in
-
-    return wrap
-
-
 # Register Routes
-app.register_blueprint(user_routes, url_prefix="/user")
 app.register_blueprint(query_routes, url_prefix="/query")
+app.register_blueprint(upload_routes, url_prefix="/upload")
+app.register_blueprint(user_routes, url_prefix="/user")
 
 
-# Routes
+# App Routes
 @app.route("/")
 def home():
-    """
-    Home page route.
-    Returns a simple string indicating the home page.
-    """
+    # TODO: Create infra to serve React App within this file
     return "Home"
-
-
-@app.route("/upload", methods=["POST"])
-@login_required
-def upload():
-    """
-    Upload route for processing a CSV file.
-    This route accepts a file upload directly.
-
-    Returns:
-        JSON response indicating success or failure of the upload process.
-    """
-    # Validate the file
-    if "file" not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-
-    # Save the file to the flask upload folder
-    filename = secure_filename(file.filename)  # Secure the file name
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    file.save(file_path)  # Save the file to the upload folder
-
-    # Process the CSV file
-    Upload().process_csv(file_path)
-
-    return jsonify({"message": "File uploaded and processed successfully"}), 200
 
 
 @app.route("/status", methods=["GET"])
