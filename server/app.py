@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 
 from upload.upload import Upload
 from users.routes import user_routes
+from utils.routes import query_routes
 
 # Application
 app = Flask(__name__)
@@ -32,7 +33,8 @@ def login_required(f):
 
     @wraps(f)
     def wrap(*args, **kwargs):
-        if "logged_in" in session:  # Check if user is logged in
+        # Check if user is logged in via session
+        if "logged_in" in session:
             return f(*args, **kwargs)  # Proceed to the requested function
         else:
             return redirect("/")  # Redirect to home if not logged in
@@ -42,6 +44,7 @@ def login_required(f):
 
 # Register Routes
 app.register_blueprint(user_routes, url_prefix="/user")
+app.register_blueprint(query_routes, url_prefix="/query")
 
 
 # Routes
@@ -92,4 +95,4 @@ def status():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)  # Start the application in debug mode on port 8080
+    app.run(debug=True, port=8080)

@@ -9,8 +9,6 @@ from werkzeug.utils import secure_filename
 
 from database import get_budgetai_db
 
-# TODO: Implement querying and deletion operations
-
 
 class Upload:
     def __init__(self):
