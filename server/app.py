@@ -3,14 +3,15 @@ from functools import wraps
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, session
+from flask_cors import CORS
 
 from users.routes import user_routes
 
 # Application
 app = Flask(__name__)
+CORS(app) # enables CORS for all routes
 load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
-
 
 # Decorators
 def login_required(f):
@@ -69,7 +70,6 @@ def status():
     Returns a JSON response indicating that the application is running.
     """
     return jsonify({"message": "Application is running"}), 200
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)  # Start the application in debug mode on port 8080

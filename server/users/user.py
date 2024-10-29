@@ -63,13 +63,13 @@ class User:
         data = request.get_json()
 
         # Check if all required fields are provided
-        if not data or not all(key in data for key in ("name", "email", "password")):
+        if not data or not all(key in data for key in ("username", "email", "password")):
             return jsonify({"error": "Missing required fields"}), 400
 
         # Create the user object with a unique ID
         user = {
             "_id": uuid.uuid4().hex,  # Generate unique user ID
-            "name": data["name"],
+            "username": data["username"],
             "email": data["email"],
             "password": data["password"],
         }
@@ -114,10 +114,10 @@ class User:
         data = request.get_json()
 
         # Check if all required fields are provided
-        if not data or not all(key in data for key in ("email", "password")):
+        if not data or not all(key in data for key in ("username", "password")):
             return jsonify({"error": "Missing required fields"}), 400
 
-        user = self.db["users"].find_one({"email": data["email"]})
+        user = self.db["users"].find_one({"username": data["username"]})
 
         if user and pbkdf2_sha256.verify(data["password"], user["password"]):
             return self.start_session(user)
