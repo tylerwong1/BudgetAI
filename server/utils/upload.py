@@ -1,15 +1,11 @@
 import csv
 import logging
-import os
 import uuid
 from datetime import datetime
 
-from flask import jsonify, request, session
-from werkzeug.utils import secure_filename
+from flask import session
 
-from database import get_budgetai_db
-
-# TODO: Implement querying and deletion operations
+from database.db import get_budgetai_db
 
 
 class Upload:
@@ -62,7 +58,8 @@ class Upload:
                 transaction_data
             )  # Example of bulk insert using pymongo
         except Exception as e:
-            logging.error(f"Error inserting transactions into database: {str(e)}")
+            logging.error(
+                f"Error inserting transactions into database: {str(e)}")
 
     def process_tuple(self, row, user_id):
         """
@@ -125,13 +122,15 @@ class Upload:
         transactions = []  # To accumulate transactions for bulk insert
 
         with open(file_path, "r") as f:
-            csv_reader = csv.DictReader(f)  # Use DictReader for easier handling
+            # Use DictReader for easier handling
+            csv_reader = csv.DictReader(f)
 
             for row in csv_reader:
                 # Process the valid row into a Transaction
                 transaction = self.process_tuple(row, user_id)
                 if transaction:  # Only add if transaction creation was successful
-                    transactions.append(transaction)  # Accumulate the transaction
+                    # Accumulate the transaction
+                    transactions.append(transaction)
 
         # Prepare to bulk insert transactions into the database
         if transactions:

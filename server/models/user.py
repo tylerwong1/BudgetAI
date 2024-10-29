@@ -4,7 +4,7 @@ import uuid
 from flask import jsonify, redirect, request, session
 from passlib.hash import pbkdf2_sha256
 
-from database import get_budgetai_db
+from database.db import get_budgetai_db
 
 
 class User:
@@ -81,7 +81,8 @@ class User:
         data = request.get_json()
 
         # Check for required fields
-        if not data or not all(key in data for key in ("name", "email", "password")):
+        if not data or not all(key in data for key in (
+                "name", "email", "password")):
             return jsonify({"error": "Missing required fields"}), 400
 
         # Create a user profile
@@ -122,7 +123,8 @@ class User:
         # Retrieve user from database
         user_data = self.db["users"].find_one({"email": data["email"]})
 
-        if user_data and pbkdf2_sha256.verify(data["password"], user_data["password"]):
+        if user_data and pbkdf2_sha256.verify(
+                data["password"], user_data["password"]):
             user_profile = self.Profile(
                 _id=user_data["_id"],
                 name=user_data["name"],
@@ -155,22 +157,27 @@ class User:
         user_id = session.get("user", {}).get("_id")
         if user_id is None:
             return jsonify({"error": "User id not found"}), 400
-        
+
         # Verifies inputed password
         data = request.get_json()
         if not data or "password" not in data:
             return jsonify({"error": "Missing required fields"}), 400
-        
+
         user_data = self.db["users"].find_one({"_id": user_id})
         if not user_data:
             return jsonify({"error": "User not found"}), 400
         if not pbkdf2_sha256.verify(data["password"], user_data["password"]):
             return jsonify({"error": "Invalid credentials"}), 400
-        
+
         # Delete any corresponding transactions from database
         self.db["transactions"].delete_many({"user_id": user_id})
         # Delete user from database
         self.db["users"].delete_one({"_id": user_id})
-        
+
         session.clear()
-        return jsonify({"message": "User and associated transactions deleted successfully"}), 200
+        return (
+            jsonify(
+                {"message": "User and associated transactions deleted successfully"}
+            ),
+            200,
+        )

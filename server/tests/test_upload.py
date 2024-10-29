@@ -1,10 +1,9 @@
-import base64
 import io
 import os
 import unittest
 
 from app import app
-from database import get_budgetai_db
+from database.db import get_budgetai_db
 
 
 class UploadTest(unittest.TestCase):
@@ -86,21 +85,25 @@ class UploadTest(unittest.TestCase):
         file_stream = io.BytesIO(self.sample_csv.encode("utf-8"))
 
         # Prepare the data for the POST request
-        data = {"file": (file_stream, "sample.csv")}  # Use a tuple to specify filename
+        # Use a tuple to specify filename
+        data = {"file": (file_stream, "sample.csv")}
 
         # Send a POST request to the /upload endpoint
-        response = self.app.post("/upload", data=data)
+        response = self.app.post("/upload/csv", data=data)
 
         # Check if the response status code is 200
         self.assertEqual(response.status_code, 200)
 
-        # Check if the message in the JSON response matches the expected success message
+        # Check if the message in the JSON response matches the expected
+        # success message
         self.assertEqual(
-            response.json.get("message"), "File uploaded and processed successfully"
+            response.json.get(
+                "message"), "File uploaded and processed successfully"
         )
 
         # Verify if the transaction was inserted into the database
-        inserted_user = self.db["users"].find_one({"email": "testuser@example.com"})
+        inserted_user = self.db["users"].find_one(
+            {"email": "testuser@example.com"})
         inserted_transaction = self.db["transactions"].find_one(
             {"user_id": inserted_user["_id"]}
         )

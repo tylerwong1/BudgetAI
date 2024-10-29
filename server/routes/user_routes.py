@@ -1,8 +1,8 @@
 from flask import Blueprint
 
-from users.user import User
+from models.user import User
+from utils.decorators import login_required
 
-# Create a Blueprint for user-related routes
 user_routes = Blueprint("user", __name__)
 
 
@@ -27,6 +27,7 @@ def login():
 
 
 @user_routes.route("/signout")
+@login_required
 def signout():
     """
     Handle user sign-out requests.
@@ -36,6 +37,7 @@ def signout():
 
 
 @user_routes.route("/wipe", methods=["POST"])
+@login_required
 def wipe():
     """
     Enables wiping the user's data.
