@@ -7,7 +7,7 @@ from flask_cors import CORS
 from routes.query_routes import query_routes
 from routes.upload_routes import upload_routes
 from routes.user_routes import user_routes
-from utils.upload import Upload
+from routes.chat_routes import chat_routes
 
 # Application
 app = Flask(__name__)
@@ -23,7 +23,7 @@ app.config["UPLOAD_FOLDER"] = "files"
 app.register_blueprint(query_routes, url_prefix="/query")
 app.register_blueprint(upload_routes, url_prefix="/upload")
 app.register_blueprint(user_routes, url_prefix="/user")
-
+app.register_blueprint(chat_routes, url_prefix="/chat")
 
 # App Routes
 @app.route("/")

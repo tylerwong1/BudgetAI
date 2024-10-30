@@ -14,12 +14,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { apiRequest } from "@/api";
+import { apiRequest } from "../api";
 
 // Define the schema for validation using Zod
 const formSchema = z
   .object({
-    username: z
+    name: z
       .string()
       .min(2, { message: "Username must be at least 2 characters." })
       .max(50, { message: "Username must not exceed 50 characters." }),
@@ -70,7 +70,7 @@ export default function SignUp() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -83,7 +83,6 @@ export default function SignUp() {
       return;
     }
     console.log("Submitted values:\n", values);
-    // navigate("/home");
     const { confirmPassword, ...userData } = values;
 
     // send POST request to backend to create user account
@@ -202,10 +201,10 @@ export default function SignUp() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="minimum 5 characters" {...field} />
                   </FormControl>
