@@ -37,13 +37,12 @@ export default function Login() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    localStorage.setItem('user', values.email);
-    localStorage.setItem('isLoggedIn', 'true');
-    navigate("/home");
 
     try {
       const request = apiRequest("/user/login", "POST", values);
       console.log("Successfully Logged In!", request);
+      localStorage.setItem('user', values.email);
+      localStorage.setItem('isLoggedIn', 'true');
       navigate("/home");
     } catch (e) {
       console.log("Error logging in...", e);

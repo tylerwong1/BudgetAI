@@ -86,9 +86,6 @@ export default function SignUp() {
       return;
     }
     console.log("Submitted values:\n", values);
-    localStorage.setItem('user', values.email);
-    localStorage.setItem('isLoggedIn', 'true');
-    navigate("/home");
     const { confirmPassword, ...userData } = values;
 
     // send POST request to backend to create user account
@@ -96,6 +93,8 @@ export default function SignUp() {
       try {
         const response = await apiRequest("/user/signup", "POST", userData);
         console.log("User Successfully Signed Up!", response);
+        localStorage.setItem('user', values.email);
+        localStorage.setItem('isLoggedIn', 'true');
         navigate("/home");
       } catch (error) {
         console.error("Error during signup:", error);
