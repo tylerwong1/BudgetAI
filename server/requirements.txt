@@ -4,3 +4,4 @@ passlib==1.7.4
 python-dotenv>=1.0.1
 openai >= 1.52.2
 httpie>=3.2.3
+Flask-Cors==5.0.0
