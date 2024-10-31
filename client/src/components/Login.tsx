@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCheckSaveLogin } from "./UserPages/HandleUser";
 import { apiRequest } from "@/api";
 
 // Define the schema for validation using Zod
@@ -24,6 +25,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  useCheckSaveLogin();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,6 +41,8 @@ export default function Login() {
     try {
       const request = apiRequest("/user/login", "POST", values);
       console.log("Successfully Logged In!", request);
+      localStorage.setItem('user', values.email);
+      localStorage.setItem('isLoggedIn', 'true');
       navigate("/home");
     } catch (e) {
       console.log("Error logging in...", e);

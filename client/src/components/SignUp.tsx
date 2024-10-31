@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCheckSaveLogin } from "./UserPages/HandleUser";
 import { apiRequest } from "../api";
 
 // Define the schema for validation using Zod
@@ -58,6 +59,8 @@ const formSchema = z
   });
 
 export default function SignUp() {
+  useCheckSaveLogin();
+
   const [hasUpCase, setHasUpCase] = useState(false);
   const [hasLowCase, setHasLowCase] = useState(false);
   const [hasNum, setHasNum] = useState(false);
@@ -90,6 +93,8 @@ export default function SignUp() {
       try {
         const response = await apiRequest("/user/signup", "POST", userData);
         console.log("User Successfully Signed Up!", response);
+        localStorage.setItem('user', values.email);
+        localStorage.setItem('isLoggedIn', 'true');
         navigate("/home");
       } catch (error) {
         console.error("Error during signup:", error);

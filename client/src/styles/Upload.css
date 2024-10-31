@@ -1,0 +1,30 @@
+.dropoff {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    width: 75%;
+    background-color: var(--secondary);
+    border: 2px dashed var(--chart-1);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    font-size: 45px;
+    justify-content: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+    color: var(--foreground);
+}
+
+.files-holder {    
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.files-holder ul {
+    padding-left: 0%;
+}
