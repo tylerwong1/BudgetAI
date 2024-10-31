@@ -14,15 +14,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCheckSaveLogin } from "./UserPages/HandleUser";
+import { apiRequest } from "@/api";
 
 // Define the schema for validation using Zod
 const formSchema = z.object({
-  username: z
-    .string(),
-
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters." })
+  email: z.string(),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters." }),
 });
 
 export default function Login() {
@@ -31,16 +30,24 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    localStorage.setItem('user', values.username);
+    localStorage.setItem('user', values.email);
     localStorage.setItem('isLoggedIn', 'true');
     navigate("/home");
+
+    try {
+      const request = apiRequest("/user/login", "POST", values);
+      console.log("Successfully Logged In!", request);
+      navigate("/home");
+    } catch (e) {
+      console.log("Error logging in...", e);
+    }
   }
 
   return (
@@ -48,37 +55,39 @@ export default function Login() {
       <h1>Log In</h1>
       <div className="content-card card">
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="m-2">Submit</Button>
-              <Link to="/signup">Don't have an account yet? Click here!</Link>
-            </form>
-          </Form>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="m-2">
+              Submit
+            </Button>
+            <Link to="/signup">Don't have an account yet? Click here!</Link>
+          </form>
+        </Form>
       </div>
     </div>
   );
