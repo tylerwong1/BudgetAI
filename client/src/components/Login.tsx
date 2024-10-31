@@ -17,7 +17,7 @@ import { apiRequest } from "@/api";
 
 // Define the schema for validation using Zod
 const formSchema = z.object({
-  username: z.string(),
+  email: z.string(),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters." }),
@@ -28,7 +28,7 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -53,10 +53,10 @@ export default function Login() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="username"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
