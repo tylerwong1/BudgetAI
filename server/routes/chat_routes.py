@@ -2,19 +2,21 @@ import os
 import json
 from flask import Blueprint, jsonify, request
 from openai import AzureOpenAI
+from dotenv import load_dotenv
 
 from utils.decorators import login_required
 
 chat_routes = Blueprint("chat", __name__)
+load_dotenv()
 
 # Set up your Azure endpoint and API key (store these securely!)
 AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
-AZURE_API_KEY = os.getenv("AZURE_API_KEY")
+AZURE_OPENAI_API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_DEPLOYMENT = os.getenv("DEPLOYMENT_NAME")
 
 client = AzureOpenAI(
     azure_endpoint=AZURE_ENDPOINT,
-    api_key=AZURE_API_KEY,
+    api_key=AZURE_OPENAI_API_KEY,
     api_version="2024-05-01-preview",
 )
 
