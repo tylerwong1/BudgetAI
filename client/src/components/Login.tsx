@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useCheckSaveLogin } from "./UserPages/HandleUser";
 import { apiRequest } from "@/api";
+import { useState } from "react";
 
 // Define the schema for validation using Zod
 const formSchema = z.object({
@@ -25,8 +26,8 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  useCheckSaveLogin();
   const navigate = useNavigate();
+  const [loginSuccess, setloginSuccess] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,14 +36,19 @@ export default function Login() {
     },
   });
 
+  if (loginSuccess) {
+    setloginSuccess(true);
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
 
     try {
-      const request = apiRequest("/user/login", "POST", values);
+      const request = await apiRequest("/user/login", "POST", values);
       console.log("Successfully Logged In!", request);
-      localStorage.setItem('user', values.email);
-      localStorage.setItem('isLoggedIn', 'true');
+      setloginSuccess(true);
+      localStorage.setItem("user", values.email);
+      localStorage.setItem("isLoggedIn", "true");
       navigate("/home");
     } catch (e) {
       console.log("Error logging in...", e);
