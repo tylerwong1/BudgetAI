@@ -3,7 +3,7 @@ import Dropzone, { DropzoneState } from "react-dropzone";
 import "@/styles/Upload.css";
 import { Button } from "../ui/button";
 import { useCheckLoggedIn } from "./HandleUser";
-// import { apiRequest } from "@/api";
+import { apiRequest } from "@/api";
 
 function CsvUploadPage() {
   useCheckLoggedIn();
@@ -11,8 +11,26 @@ function CsvUploadPage() {
 
   const handleDrop = (accepted: File[]) => {
     setAcceptedFiles(accepted);
-    // try {
-    // const response = await apiRequest("/upload/csv", )
+  };
+
+  const handleUpload = async () => {
+    if (acceptedFiles.length === 0) return;
+
+    // Create a FormData object and append files
+    const formData = new FormData();
+    acceptedFiles.forEach((file) => {
+      formData.append("file", file); // The key "files" should match your backend's expected form field
+    });
+
+    try {
+      console.log("Sending request to backend with files...");
+      const response = await apiRequest("/upload/csv", "POST", formData);
+      const data = await response;
+      console.log("Response:", data);
+      // TODO: Add alerts to notify user about status of upload
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -37,7 +55,9 @@ function CsvUploadPage() {
               ))}
             </ul>
           </div>
-          <Button className="max-w-sm">Upload Chosen CSV files</Button>
+          <Button className="max-w-sm" onClick={handleUpload}>
+            Upload Chosen CSV files
+          </Button>
         </div>
       )}
     </div>

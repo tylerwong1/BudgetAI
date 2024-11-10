@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Chat from "./components/UserPages/Chat";
 import LandingPage from "./components/UserPages/LandingPage";
 import CsvUploadPage from "./components/UserPages/Upload";
+import Analysis from "./components/UserPages/Analysis";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./styles/App.css";
 
@@ -25,6 +26,7 @@ function App() {
               {/* All protected pages requiring the user to log in first! */}
               <Route path="/home" Component={LandingPage} />
               <Route path="/upload" Component={CsvUploadPage} />
+              <Route path="/analysis" Component={Analysis} />
               <Route path="/chat" Component={Chat} />
             </Routes>
           </div>
