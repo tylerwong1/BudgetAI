@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -8,20 +8,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import "@/styles/Analysis.css";
 
+// Dummy data for later
+const spendingData = [
+  { category: "Food & Dining", amount: "$200", date: "2024-11-01" },
+  { category: "Utilities", amount: "$150", date: "2024-11-02" },
+  { category: "Entertainment", amount: "$75", date: "2024-11-03" },
+  { category: "Travel", amount: "$300", date: "2024-11-04" },
+];
+
+const categories = ["All", "Food & Dining", "Utilities", "Entertainment", "Travel"];
+export type Category = typeof categories[number];
+
+interface Data {
+  category: string,
+  amount: string,
+  date: string
+}
+
 const Analysis = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Select Category");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("All");
+  const [filteredData, setFilteredData] = useState<Data[]>(spendingData);
 
   const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
+    if (["All", "Food & Dining", "Utilities", "Entertainment", "Travel"].includes(category)) {
+      setSelectedCategory(category as Category);
+    }
   };
 
-  // Dummy data for table rows
-  const spendingData = [
-    { category: "Food & Dining", amount: "$200", date: "2024-11-01" },
-    { category: "Utilities", amount: "$150", date: "2024-11-02" },
-    { category: "Entertainment", amount: "$75", date: "2024-11-03" },
-    { category: "Travel", amount: "$300", date: "2024-11-04" },
-  ];
+  useEffect(()=> {
+    if (selectedCategory === "All") {
+      setFilteredData(spendingData);
+    } else {
+      setFilteredData(spendingData.filter((item) => item.category === selectedCategory));
+    }
+  },[spendingData, selectedCategory])
 
   return (
     <div className="content-holder">
@@ -40,17 +60,11 @@ const Analysis = () => {
               value={selectedCategory}
               onValueChange={handleCategorySelect}
             >
-              <DropdownMenuRadioItem value="Food & Dining">
-                Food & Dining
+            {categories.map((category) => (
+              <DropdownMenuRadioItem key={category} value={category}>
+                {category}
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Utilities">
-                Utilities
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Entertainment">
-                Entertainment
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Travel">Travel</DropdownMenuRadioItem>
-              {/* Add more categories as needed */}
+            ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -64,7 +78,7 @@ const Analysis = () => {
             </tr>
           </thead>
             <tbody className="table-body-wrapper">
-              {spendingData.map((item, index) => (
+              {filteredData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.category}</td>
                   <td>{item.amount}</td>
