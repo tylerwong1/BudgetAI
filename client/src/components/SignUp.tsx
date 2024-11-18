@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -93,8 +92,8 @@ export default function SignUp() {
       try {
         const response = await apiRequest("/user/signup", "POST", userData);
         console.log("User Successfully Signed Up!", response);
-        localStorage.setItem('user', values.email);
-        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem("user", values.email);
+        localStorage.setItem("isLoggedIn", "true");
         navigate("/home");
       } catch (error) {
         console.error("Error during signup:", error);

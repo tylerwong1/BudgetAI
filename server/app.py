@@ -11,13 +11,15 @@ from routes.chat_routes import chat_routes
 
 # Application
 app = Flask(__name__)
-CORS(app) # enables CORS for all routes
+CORS(app, supports_credentials=True)# enables CORS for all routes
 load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 app.config["SESSION_COOKIE_NAME"] = "budgetai_session"
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["UPLOAD_FOLDER"] = "files"
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = True
 
 # Register Routes
 app.register_blueprint(query_routes, url_prefix="/query")
