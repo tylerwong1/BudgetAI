@@ -49,3 +49,6 @@ Thumbs.db
 # Ignore pycache
 server/__pycache__/
 server/*/__pycache__/
+
+# Ignore CSV Files
+server/files/
