@@ -26,7 +26,8 @@ function CsvUploadPage() {
       console.log("Sending request to backend with files...");
       const response = await apiRequest("/upload/csv", "POST", formData);
       const data = await response;
-      console.log("Response:", data);
+      console.log("Response:", data.message);
+      alert(data.message);
       // TODO: Add alerts to notify user about status of upload
     } catch (error) {
       console.error("Error:", error);

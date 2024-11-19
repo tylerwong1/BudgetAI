@@ -6,6 +6,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
+import { useCheckLoggedIn } from "./HandleUser";
 import { apiRequest } from "@/api";
 import { Button } from "../ui/button";
 import "@/styles/Analysis.css";
@@ -30,6 +31,7 @@ interface Data {
 }
 
 const Analysis = () => {
+  useCheckLoggedIn();
   const [selectedCategory, setSelectedCategory] = useState<Category>("All");
   const [allData, setAllData] = useState<Data[]>([]); // Store all transactions
   const [filteredData, setFilteredData] = useState<Data[]>([]); // Filtered transactions

@@ -35,4 +35,4 @@ def upload():
     Upload().process_csv(file_path)
 
     return jsonify(
-        {"message": "File uploaded and processed successfully"}), 200
+        {"message": "File uploaded and processed successfully!"}), 200
