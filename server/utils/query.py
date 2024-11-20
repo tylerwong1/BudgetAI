@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import jsonify, request, session
 
@@ -130,3 +130,46 @@ class Query:
             )
         )
         return jsonify(transactions)
+
+    def get_transaction_range(self):
+        user_id, response, status_code = self.get_current_user_id()
+        months = []
+
+        if status_code != 200:
+            return response, status_code
+
+        # Query the minimum and maximum dates for the user's transactions
+        date_range = self.db["transactions"].aggregate([
+            {"$match": {"user_id": user_id}},
+            {
+                "$group": {
+                    "_id": None,
+                    "minDate": {"$min": "$transaction_date"},
+                    "maxDate": {"$max": "$transaction_date"}
+                }
+            }
+        ])
+
+        # Extract the result
+        date_range = list(date_range)
+        if not date_range:
+            return jsonify({"error": "No transactions found for the user"}), 404
+
+        min_date = date_range[0]["minDate"]
+        max_date = date_range[0]["maxDate"]
+
+        # Ensure min_date and max_date are valid
+        if not min_date or not max_date:
+            return jsonify({"error": "Could not determine date range"}), 400
+
+        # Convert min_date and max_date to Python datetime
+        min_date = datetime.strptime(min_date, "%m/%d/%Y")
+        max_date = datetime.strptime(max_date, "%m/%d/%Y")
+
+        # Generate list of months in the range
+        current_date = min_date
+        while current_date <= max_date:
+            months.append(current_date.strftime("%B %Y"))
+            current_date = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+        return jsonify(months)
