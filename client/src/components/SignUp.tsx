@@ -94,7 +94,7 @@ export default function SignUp() {
         console.log("User Successfully Signed Up!", response);
         localStorage.setItem("user", values.email);
         localStorage.setItem("isLoggedIn", "true");
-        navigate("/home");
+        navigate("/upload");
       } catch (error) {
         console.error("Error during signup:", error);
         alert("An error occurred during signup. Please try again.");
