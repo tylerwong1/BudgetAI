@@ -50,7 +50,7 @@ Make sure to have **multiple terminal instances** available for running the back
 ```bash
 python app.py
 ```
-    - This will start the backend at `localhost:5000` (or whichever port you configure).
+This will start the backend at `localhost:8080`.
 
 
 ### Frontend Setup
