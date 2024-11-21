@@ -4,8 +4,10 @@ import "@/styles/Upload.css";
 import { Button } from "../ui/button";
 import { useCheckLoggedIn } from "./HandleUser";
 import { apiRequest } from "@/api";
+import { useNavigate } from "react-router-dom";
 
 function CsvUploadPage() {
+  const navigate = useNavigate();
   useCheckLoggedIn();
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
 
@@ -26,7 +28,9 @@ function CsvUploadPage() {
       console.log("Sending request to backend with files...");
       const response = await apiRequest("/upload/csv", "POST", formData);
       const data = await response;
-      console.log("Response:", data);
+      if (data.message == "File uploaded and processed successfully"){
+        navigate("/home");
+      }
       // TODO: Add alerts to notify user about status of upload
     } catch (error) {
       console.error("Error:", error);
