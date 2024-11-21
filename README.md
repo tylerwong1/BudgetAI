@@ -73,11 +73,11 @@ yarn install
 3. **Run the Website Locally**
 If you're using npm:
 ```bash
-npm install
+npm run dev
 ```
 Or if you're using Yarn:
 ```bash
-yarn install
+yarn run dev
 ```
 The frontend should now be accessible at http://localhost:5173/BudgetAI/.
 
