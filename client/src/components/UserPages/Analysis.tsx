@@ -25,9 +25,10 @@ export type Category = (typeof categories)[number];
 const timeFrames = ["All Time", "Last Week", "Last Month", "Last 6 Months"];
 
 interface Data {
+  description: string;
   category: string;
   amount: string;
-  date: string;
+  transaction_date: string;
 }
 
 const Analysis = () => {
