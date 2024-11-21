@@ -62,6 +62,7 @@ Once the backend is running, follow these steps to get the frontend up and runni
 cd ./client
 ```
 2. **Install dependencies**:
+
 If you're using npm:
 ```bash
 npm install
@@ -70,7 +71,8 @@ Or if you're using Yarn:
 ```bash
 yarn install
 ```
-3. **Run the Website Locally**
+3. **Run the Website Locally**:
+
 If you're using npm:
 ```bash
 npm run dev
