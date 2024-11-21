@@ -24,10 +24,10 @@ function Navbar() {
         BudgetAI
       </Link>
       <Link to="/upload" className="nav-links">
-        Upload Data
+        Upload
       </Link>
       <Link to="/analysis" className="nav-links">
-        Analysis
+        Transactions
       </Link>
       <Link to="/chat" className="nav-links">
         Chat

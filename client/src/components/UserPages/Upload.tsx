@@ -4,10 +4,8 @@ import "@/styles/Upload.css";
 import { Button } from "../ui/button";
 import { useCheckLoggedIn } from "./HandleUser";
 import { apiRequest } from "@/api";
-import { useNavigate } from "react-router-dom";
 
 function CsvUploadPage() {
-  const navigate = useNavigate();
   useCheckLoggedIn();
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
 

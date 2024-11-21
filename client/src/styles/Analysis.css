@@ -1,6 +1,8 @@
 .user-select-analysis {
     display: flex;
+    flex-direction: row;
     justify-self: flex-start;
+    align-items: center;
     color: var(--accent);
     padding-bottom: 1rem;
     gap: 20px;
@@ -9,10 +11,12 @@
 .display-results {
     top: 25%;
     width: 80%;
-    border-collapse: collapse;
+    max-height: 70vh;
     margin: 20px 0;
     font-size: 1rem;
     text-align: left;
+    overflow: auto;
+    border: 3px solid var(--foreground);
 }
 
 .display-results th,
