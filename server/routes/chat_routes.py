@@ -1,8 +1,12 @@
 import os
 import json
 from flask import Blueprint, jsonify, request
+import requests
 from openai import AzureOpenAI
 from dotenv import load_dotenv
+import pandas as pd
+from pandasai import Agent
+from utils.query import Query
 
 from utils.decorators import login_required
 
@@ -55,3 +59,37 @@ def ask_chatbot():
       completion_json = json.loads(completion.to_json())
       content = completion_json["choices"][0]["message"]["content"]
       return jsonify({"response": content})
+
+
+@chat_routes.route("/insights", methods=["GET"])
+@login_required
+def get_insights():
+    """
+    Fetch transaction data, update the global PandasAI agent, and process the hardcoded prompt.
+    """
+    # Step 1: Fetch transaction data
+    transactions = Query().get_transactions(response_type="list")
+
+    if not transactions:
+        return jsonify({"error": "No transaction data available"}), 404
+    print(transactions)
+
+    transactions_df = pd.DataFrame(transactions)
+    transactions_df['amount'] = pd.to_numeric(transactions_df['amount'], errors='coerce')
+    transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], errors='coerce')
+
+    if transactions_df.empty:
+        return jsonify({"error": "Transaction data is empty"}), 404
+
+    agent = Agent([transactions_df])
+
+    # Step 4: Hardcoded prompt for insights
+    prompt = "What is the most frequent category?"
+
+    # Step 5: Use the global agent to analyze the data
+    try:
+        insights = agent.chat(prompt)
+        print(insights)
+        return jsonify({"insights": insights}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
