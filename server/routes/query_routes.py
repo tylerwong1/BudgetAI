@@ -29,7 +29,12 @@ def get_transactions_by_amount():
 def get_transactions_by_date():
     return Query().get_by_date_range()
 
-@query_routes.route("/transactions/date_range", methods=["GET"])
+@query_routes.route("/transactions/category", methods=["GET"])
 @login_required
-def get_transaction_date_range():
-    return Query().get_transaction_range()
+def get_transaction_categories():
+    return Query().get_categories()
+
+@query_routes.route("/transactions/totals", methods=["GET"])
+@login_required
+def get_transaction_totals():
+    return Query().get_transaction_totals()
