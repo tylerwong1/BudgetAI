@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ModeToggle } from "@/components/ModeToggle";
 import { NavigationState, useNavigationState } from "./UserPages/HandleUser";
 import "@/styles/Navbar.css";
 
