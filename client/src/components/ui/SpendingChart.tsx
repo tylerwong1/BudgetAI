@@ -17,14 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+import { apiRequest } from "@/api";
+import { useEffect, useState } from "react";
 
 const chartConfig = {
   desktop: {
@@ -37,7 +31,66 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+interface CategoryData {
+  [category: string]: number;
+}
+
+type ResponseElement = [string, CategoryData];
+
+type APIResponse = ResponseElement[];
+
+interface ChartData {
+  month: string;
+  [category: string]: number;
+}
+
+//format data so chart can understand
+const parseData = (response: APIResponse): ChartData[] => {
+  const chartData = response.map(([month, categories]) => {
+    // Construct a ChartData object
+    const chartItem: ChartData = { month };
+
+    Object.entries(categories).forEach(([category, value]) => {
+      chartItem[category] = value;
+    });
+    return chartItem;
+  });
+  return chartData;
+};
+
 export function SpendingChart() {
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await apiRequest("/query/transactions/totals", "GET");
+        const data = parseData(response);
+        console.log(data);
+        setChartData(data);
+      } catch (error) {
+        console.log("Error...", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchChartData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading chart...</p>; // Show a loading state while fetching data
+  }
+
+  if (chartData.length === 0) {
+    return <p>No data available.</p>; // Handle case when no data is returned
+  }
+
+  // Extract unique category names for dynamic line rendering
+  const categoryNames = Object.keys(chartData[0]).filter(
+    (key) => key !== "month",
+  );
+  console.log(chartData);
   return (
     <Card>
       <CardHeader>
@@ -63,20 +116,18 @@ export function SpendingChart() {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
-              dataKey="desktop"
-              type="monotone"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="mobile"
-              type="monotone"
-              stroke="var(--color-mobile)"
-              strokeWidth={2}
-              dot={false}
-            />
+
+            {/* Render a Line for each category */}
+            {categoryNames.map((category, index) => (
+              <Line
+                key={category}
+                dataKey={category}
+                type="monotone"
+                stroke={`hsl(${(index * 60) % 360}, 100%, 50%)`} // Generate a unique color for each category
+                strokeWidth={2}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ChartContainer>
       </CardContent>
