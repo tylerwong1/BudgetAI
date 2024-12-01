@@ -30,13 +30,15 @@ class Query:
         # Return user_id, success message, and 200 status if all checks pass
         return user_id, jsonify({"message": "User found"}), 200
 
-    def get_transactions(self):
+    def get_transactions(self, response_type="json"):
         user_id, response, status_code = self.get_current_user_id()
 
         if status_code != 200:
             return response, status_code
 
         transactions = list(self.db["transactions"].find({"user_id": user_id}))
+        if response_type == "list":
+            return transactions
         return jsonify(transactions)
 
     def get_by_category(self):
