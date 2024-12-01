@@ -84,7 +84,7 @@ def get_insights():
     agent = Agent([transactions_df])
 
     # Step 4: Hardcoded prompt for insights
-    prompt = "What is the most frequent category?"
+    prompt = "Give me some general trends about my spending data!"
 
     # Step 5: Use the global agent to analyze the data
     try:
