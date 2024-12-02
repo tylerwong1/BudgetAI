@@ -32,21 +32,27 @@ function LandingPage() {
     <div className="content-holder">
       <div className="card bg-muted w-3/5 p-5">
         <h1 className="grow text-center">Spending Chart</h1>
-        <SpendingChart></SpendingChart>
+        {trends[0] != "Unable to retrieve trends. Try again later." && <SpendingChart />}
         <div className="flex flex-col items-center justify-center">
-          <h1 className="text-center">Your Trends</h1>
           {loading ? (
             <p>Loading Trends...</p>
-          ) : (
-            <ul className="list-dot">
-              {trends.map((trend, index) => (
-                <li key={index}>{trend}</li>
-              ))}
-            </ul>
-          )}
+          ) : trends[0] != "Unable to retrieve trends. Try again later." ? (
+            <>
+              <h1 className="text-center">Your Trends</h1>
+              <ul className="list-dot">
+                {trends.map((trend, index) => (
+                  <li key={index}>{trend}</li>
+                ))}
+              </ul>
+            </>
+          ) : <div>
+            <br/>
+            <h2>Please upload data using the <a href="./upload">Upload Page</a>!</h2>
+            </div>}
         </div>
       </div>
     </div>
   );
+  
 }
 export default LandingPage;

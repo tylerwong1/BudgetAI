@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 //import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import SignUp from "./components/SignUp";
@@ -9,7 +9,6 @@ import CsvUploadPage from "./components/UserPages/Upload";
 import Analysis from "./components/UserPages/Analysis";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./styles/App.css";
-import About from "./components/About";
 
 function App() {
   return (
@@ -19,7 +18,7 @@ function App() {
           <Navbar />
           <div className="page-holder">
             <Routes>
-              <Route path="/" Component={About} />
+              <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/signup" Component={SignUp} />
               <Route path="/login" Component={Login} />
               {/* All protected pages requiring the user to log in first! */}
