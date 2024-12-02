@@ -1,45 +1,45 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 /**
  * Custom Enums to track where the user is for the NavBar to adjust with its links
  */
 export enum NavigationState {
-  INTRO = 'INTRO',
-  LOG_IN = 'LOG-IN',
-  MAIN_PAGES = 'MAIN-PAGES',
+  INTRO = "INTRO",
+  LOG_IN = "LOG-IN",
+  MAIN_PAGES = "MAIN-PAGES",
 }
 
-/**  
+/**
  * Custom hook for checking if user is logged in.
  * When invoked, if the user isn't logged in, it returns them to the log in page!
-*/
+ */
 export const useCheckLoggedIn = (): void => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-    if (!isLoggedIn || isLoggedIn !== 'true') {
-      navigate('/login');
+    if (!isLoggedIn || isLoggedIn !== "true") {
+      navigate("/login");
     }
   }, [navigate, location]);
 };
 
-/**  
+/**
  * Custom hook for checking if user is logged in.
  * When invoked, if the user is logged in, it returns them to the home page!
-*/
+ */
 export const useCheckSaveLogin = (): void => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
 
-    if (isLoggedIn === 'true') {
-      navigate('/home');
+    if (isLoggedIn === "true") {
+      navigate("/home");
     }
   }, [navigate, location]);
 };
@@ -49,18 +49,20 @@ export const useCheckSaveLogin = (): void => {
  */
 export const useNavigationState = (): NavigationState => {
   const location = useLocation();
-  const [currentState, setCurrentState] = useState<NavigationState>(NavigationState.LOG_IN);
+  const [currentState, setCurrentState] = useState<NavigationState>(
+    NavigationState.LOG_IN,
+  );
 
   useEffect(() => {
     switch (location.pathname) {
-      case '/login':
-      case '/signup':
+      case "/login":
+      case "/signup":
         setCurrentState(NavigationState.LOG_IN);
         break;
-      case '/home':
-      case '/upload':
-      case '/analysis':
-      case '/chat':
+      case "/home":
+      case "/upload":
+      case "/analysis":
+      case "/chat":
         setCurrentState(NavigationState.MAIN_PAGES);
         break;
       default:
@@ -69,10 +71,4 @@ export const useNavigationState = (): NavigationState => {
   }, [location]);
 
   return currentState;
-};
-
-export const getUserTrends = () => {
-  return (["You spent 5% less on leisure this month",
-          "Your spending is down 2.5% this month",
-          "Your spending this year went down by $318!"]);
 };

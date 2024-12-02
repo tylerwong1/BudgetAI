@@ -9,6 +9,7 @@ import CsvUploadPage from "./components/UserPages/Upload";
 import Analysis from "./components/UserPages/Analysis";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./styles/App.css";
+import About from "./components/About";
 
 function App() {
   return (
@@ -18,9 +19,7 @@ function App() {
           <Navbar />
           <div className="page-holder">
             <Routes>
-              {/* Removed for now, add back later!!!
-              <Route path="/" Component={Home} /> */}
-              <Route path="/" Component={SignUp} />
+              <Route path="/" Component={About} />
               <Route path="/signup" Component={SignUp} />
               <Route path="/login" Component={Login} />
               {/* All protected pages requiring the user to log in first! */}

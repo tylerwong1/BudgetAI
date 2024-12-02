@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import "@/styles/Upload.css";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { useCheckLoggedIn } from "./HandleUser";
 import { apiRequest } from "@/api";
+import "@/styles/Chat.css"
 
 // Define the schema for validation using Zod
 const messageSchema = z.object({
@@ -30,8 +30,14 @@ interface Message {
 function Chat() {
   useCheckLoggedIn();
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Use react-hook-form to handle the form state and validation
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
@@ -55,6 +61,7 @@ function Chat() {
     try {
       // Send the user message to the backend
       console.log("message is sent!!!");
+      form.reset();
       const response = await apiRequest("/chat/prompt", "POST", query);
 
       const data = await response;
@@ -75,21 +82,24 @@ function Chat() {
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
-
-    form.reset(); // Clear the input field after sending
   };
 
   return (
     <div className="content-holder">
       <h1>ChatBot</h1>
-      <div className="content-card card">
-        <div className="chat-messages">
-          {messages.map((message, index) => (
-            <div key={index} className={`message ${message.sender}`}>
-              {message.text}
-            </div>
-          ))}
-        </div>
+      <div className="card chat">
+        {
+          messages.length > 0 &&
+            <div className="chat-messages">
+            {
+            messages.map((message, index) => (
+              <div key={index} className={`message ${message.sender}`}>
+                {message.text}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        }
 
         <Form {...form}>
           <form
@@ -101,7 +111,6 @@ function Chat() {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Type your message..." />
                   </FormControl>

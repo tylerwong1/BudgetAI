@@ -6,6 +6,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
+import { useCheckLoggedIn } from "./HandleUser";
 import { apiRequest } from "@/api";
 import { Button } from "../ui/button";
 import "@/styles/Analysis.css";
@@ -24,23 +25,25 @@ export type Category = (typeof categories)[number];
 const timeFrames = ["All Time", "Last Week", "Last Month", "Last 6 Months"];
 
 interface Data {
+  description: string;
   category: string;
   amount: string;
-  date: string;
+  transaction_date: string;
 }
 
 const Analysis = () => {
+  useCheckLoggedIn();
   const [selectedCategory, setSelectedCategory] = useState<Category>("All");
-  const [allData, setAllData] = useState<Data[]>([]); // Store all transactions
-  const [filteredData, setFilteredData] = useState<Data[]>([]); // Filtered transactions
+  const [allData, setAllData] = useState<Data[]>([]);
+  const [filteredData, setFilteredData] = useState<Data[]>([]);
   const [selectedTimeFrame, setTimeFrame] = useState<string>("All Time");
 
   // Function to fetch data from API
   const fetchSpendingData = async () => {
     try {
       const data = await apiRequest("/query/transactions", "GET");
-      setAllData(data); // Store the full dataset
-      setFilteredData(data); // Default to show all data
+      setAllData(data);
+      setFilteredData(data);
     } catch (error) {
       console.error("Failed to fetch spending data:", error);
     }
@@ -70,11 +73,11 @@ const Analysis = () => {
       if (selectedTimeFrame === "Last Week") {
         const lastWeek = new Date(now);
         lastWeek.setDate(now.getDate() - 7);
-        filtered = filtered.filter((item) => new Date(item.date) >= lastWeek);
+        filtered = filtered.filter((item) => new Date(item.transaction_date) >= lastWeek);
       } else if (selectedTimeFrame === "Last Month") {
         const lastMonth = new Date(now);
         lastMonth.setDate(now.getMonth() - 1);
-        filtered = filtered.filter((item) => new Date(item.date) >= lastMonth);
+        filtered = filtered.filter((item) => new Date(item.transaction_date) >= lastMonth);
       }
     }
     setFilteredData(filtered);
@@ -134,26 +137,28 @@ const Analysis = () => {
         </DropdownMenu>
         <Button onClick={handleSubmit}>Submit</Button>
       </div>
-      <table className="display-results">
-        <thead>
-          <tr>
-            <th>Merchant</th>
-            <th>Category</th>
-            <th>Amount</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody className="table-body-wrapper">
-          {filteredData.map((item, index) => (
-            <tr key={index}>
-              <td>{item.description}</td>
-              <td>{item.category}</td>
-              <td>{"$" + item.amount}</td>
-              <td>{item.transaction_date}</td>
+      <div  className="display-results">
+        <table>
+          <thead>
+            <tr>
+              <th>Merchant</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="table-body-wrapper">
+            {filteredData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.description}</td>
+                <td>{item.category}</td>
+                <td>{"$" + item.amount}</td>
+                <td>{item.transaction_date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
