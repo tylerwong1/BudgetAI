@@ -16,7 +16,7 @@ For more detailed information on the project, please refer to the full [Project 
 ## Technologies Used:
 - **Frontend**: React, Vite, JavaScript/TypeScript
 - **Backend**: Python, Flask, MongoDB
-- **AI Integration**: GPT-3.5 Turbo API (via Azure)
+- **AI Integration**: GPT-3.5 Turbo API (via Azure), PandasAI
 - **Version Control**: Git
 
 ## Getting Started
