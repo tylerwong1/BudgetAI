@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 async function getUserTrends(): Promise<string[]> {
   const response = await apiRequest("/chat/insights", "GET");
-  console.log(response);
   const insights = response?.insights;
   return typeof insights === "string" ? insights.split("\n") : [];
 }
