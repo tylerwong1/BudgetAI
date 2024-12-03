@@ -93,7 +93,11 @@ export function SpendingChart() {
     <Card>
       <CardHeader>
         <CardTitle>Historic Spending</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>
+          {chartData.length > 0
+            ? `${chartData[0].month} - ${chartData[chartData.length - 1].month}`
+            : "No data available"}{" "}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
